@@ -1,0 +1,5 @@
+com\skyeye\common\entity\BaseEntity.class
+com\skyeye\common\exception\BusinessException.class
+com\skyeye\common\response\ApiResponse.class
+com\skyeye\common\exception\GlobalExceptionHandler.class
+com\skyeye\common\response\PageResponse.class

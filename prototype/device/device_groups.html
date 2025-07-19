@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyEye - 设备分组</title>
+    <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../assets/css/fontawesome.min.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <style>
+        .group-card {
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+        .group-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
+        }
+        .group-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        .group-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        .group-title {
+            margin-bottom: 0;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+        }
+        .group-content {
+            margin-top: 15px;
+        }
+        .group-stats {
+            display: flex;
+            justify-content: start;
+            margin-top: 15px;
+            gap: 20px;
+        }
+        .group-stat-item {
+            display: flex;
+            align-items: center;
+        }
+        .group-stat-icon {
+            margin-right: 5px;
+            font-size: 14px;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+        }
+        .group-stat-value {
+            font-weight: 600;
+            margin-right: 5px;
+        }
+        .group-stat-label {
+            color: #6c757d;
+            font-size: 14px;
+        }
+        .group-actions {
+            opacity: 0;
+            transition: all 0.3s;
+        }
+        .group-card:hover .group-actions {
+            opacity: 1;
+        }
+        .group-badge {
+            font-size: 80%;
+            margin-left: 8px;
+        }
+        .device-count {
+            font-size: 24px;
+            font-weight: 600;
+        }
+        .device-status-chart {
+            width: 100%;
+            height: 80px;
+        }
+        .table td, .table th {
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 左侧导航 -->
+        <div class="sidebar">
+            <div class="logo">
+                <img src="../assets/images/logo.png" alt="SkyEye Logo">
+                <h2>SkyEye</h2>
+            </div>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="../dashboard.html"><i class="fas fa-tachometer-alt"></i> 控制台</a></li>
+                    
+                    <!-- 设备管理菜单（展开） -->
+                    <li class="active">
+                        <a href="#deviceSubMenu" data-toggle="collapse" aria-expanded="true">
+                            <i class="fas fa-server"></i> 设备管理
+                            <i class="fas fa-angle-down"></i>
+                        </a>
+                        <ul class="collapse show" id="deviceSubMenu">
+                            <li><a href="devices_v2.html">设备列表</a></li>
+                            <li><a href="device_add_v2.html">添加设备</a></li>
+                            <li><a href="device_types.html">设备类型管理</a></li>
+                            <li><a href="device_areas.html">区域管理</a></li>
+                            <li class="active"><a href="device_groups.html">设备分组</a></li>
+                            <li><a href="device_tags.html">标签管理</a></li>
+                            <li><a href="device_templates.html">设备模板</a></li>
+                            <li><a href="device_protocols.html">设备协议</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li><a href="../monitoring.html"><i class="fas fa-video"></i> 监控管理</a></li>
+                    <li><a href="../alerts.html"><i class="fas fa-bell"></i> 报警中心</a></li>
+                    <li><a href="../task_scheduling.html"><i class="fas fa-tasks"></i> 任务调度</a></li>
+                    <li><a href="../analytics.html"><i class="fas fa-chart-line"></i> 数据分析</a></li>
+                    <li><a href="../settings.html"><i class="fas fa-cog"></i> 系统设置</a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <!-- 顶部导航 -->
+            <header class="top-bar">
+                <div class="search-container">
+                    <input type="text" placeholder="搜索...">
+                    <i class="fas fa-search"></i>
+                </div>
+                <div class="top-bar-right">
+                    <div class="notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge">3</span>
+                    </div>
+                    <div class="user-profile">
+                        <img src="../assets/images/user-avatar.png" alt="用户头像">
+                        <span>管理员</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- 内容区域 -->
+            <div class="content">
+                <div class="content-header">
+                    <h2>设备分组</h2>
+                    <div class="actions">
+                        <button class="btn btn-outline-secondary mr-2" onclick="location.href='devices_v2.html'">
+                            <i class="fas fa-list"></i> 设备列表
+                        </button>
+                        <button class="btn btn-primary" onclick="location.href='device_group_add.html'">
+                            <i class="fas fa-plus"></i> 添加分组
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 状态统计卡片 -->
+                <div class="row">
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">设备分组统计</h5>
+                                <div class="d-flex align-items-center mt-3">
+                                    <div class="device-count mr-3">12</div>
+                                    <div>
+                                        <div>分组总数</div>
+                                        <small class="text-muted">共管理56台设备</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8 mb-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">设备状态分布</h5>
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <div class="device-status-chart">
+                                            <!-- 此处应有图表，使用占位符 -->
+                                            <svg width="100%" height="100%" viewBox="0 0 100 80" xmlns="http://www.w3.org/2000/svg">
+                                                <circle cx="40" cy="40" r="30" fill="#e9ecef" />
+                                                <path d="M40,10 A30,30 0 1,1 10,40" fill="#28a745" />
+                                                <path d="M10,40 A30,30 0 0,1 25,13" fill="#ffc107" />
+                                                <path d="M25,13 A30,30 0 0,1 40,10" fill="#dc3545" />
+                                                <circle cx="40" cy="40" r="20" fill="white" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <span class="badge badge-success mr-2" style="width: 15px; height: 15px;"></span>
+                                            <span class="mr-2">在线</span>
+                                            <span class="font-weight-bold">48 (85%)</span>
+                                        </div>
+                                        <div class="d-flex align-items-center mb-2">
+                                            <span class="badge badge-warning mr-2" style="width: 15px; height: 15px;"></span>
+                                            <span class="mr-2">维护中</span>
+                                            <span class="font-weight-bold">5 (9%)</span>
+                                        </div>
+                                        <div class="d-flex align-items-center">
+                                            <span class="badge badge-danger mr-2" style="width: 15px; height: 15px;"></span>
+                                            <span class="mr-2">离线</span>
+                                            <span class="font-weight-bold">3 (6%)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 分组列表 -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">分组列表</h5>
+                            <div class="input-group" style="width: 300px;">
+                                <input type="text" class="form-control" placeholder="搜索分组...">
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary" type="button">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- 安防监控分组 -->
+                            <div class="col-md-6">
+                                <div class="card group-card">
+                                    <div class="card-body">
+                                        <div class="group-header">
+                                            <div class="group-icon bg-primary-light text-primary">
+                                                <i class="fas fa-video"></i>
+                                            </div>
+                                            <div class="dropdown">
+                                                <button class="btn btn-link btn-sm p-0 text-muted" data-toggle="dropdown">
+                                                    <i class="fas fa-ellipsis-v"></i>
+                                                </button>
+                                                <div class="dropdown-menu dropdown-menu-right">
+                                                    <a class="dropdown-item" href="#"><i class="fas fa-eye"></i> 查看设备</a>
+                                                    <a class="dropdown-item" href="#"><i class="fas fa-edit"></i> 编辑分组</a>
+                                                    <a class="dropdown-item" href="#"><i class="fas fa-plus"></i> 添加设备</a>
+                                                    <a class="dropdown-item" href="#"><i class="fas fa-plus-circle"></i> 添加子分组</a>
+                                                    <div class="dropdown-divider"></div>
+                                                    <a class="dropdown-item text-danger" href="#"><i class="fas fa-trash"></i> 删除分组</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="group-title">
+                                            安防监控
+                                            <span class="badge badge-primary group-badge">主分组</span>
+                                        </div>
+                                        <p class="text-muted mt-2">所有安防监控设备的分组，包含摄像头、门禁等</p>
+                                        <div class="group-stats">
+                                            <div class="group-stat-item">
+                                                <div class="group-stat-icon">
+                                                    <i class="fas fa-server"></i>
+                                                </div>
+                                                <div class="group-stat-value">24</div>
+                                                <div class="group-stat-label">设备数</div>
+                                            </div>
+                                            <div class="group-stat-item">
+                                                <div class="group-stat-icon">
+                                                    <i class="fas fa-layer-group"></i>
+                                                </div>
+                                                <div class="group-stat-value">3</div>
+                                                <div class="group-stat-label">子分组</div>
+                                            </div>
+                                            <div class="group-stat-item">
+                                                <div class="group-stat-icon text-success">
+                                                    <i class="fas fa-check-circle"></i>
+                                                </div>
+                                                <div class="group-stat-value">22</div>
+                                                <div class="group-stat-label">在线</div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- 子分组列表 -->
+                                        <div class="mt-3 pt-3 border-top">
+                                            <h6>子分组</h6>
+                                            <ul class="list-group list-group-flush">
+                                                <li class="list-group-item px-0">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <div>
+                                                            <i class="fas fa-video-slash text-muted mr-2"></i>
+                                                            门口监控
+                                                            <small class="text-muted">(8台设备)</small>
+                                                        </div>
+                                                        <div>
+                                                            <span class="badge badge-success mr-1">7</span>
+                                                            <span class="badge badge-danger mr-1">1</span>
+                                                            <button class="btn btn-sm btn-link p-0">
+                                                                <i class="fas fa-chevron-right"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                                <li class="list-group-item px-0">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <div>
+                                                            <i class="fas fa-video-slash text-muted mr-2"></i>
+                                                            周界监控
+                                                            <small class="text-muted">(10台设备)</small>
+                                                        </div>
+                                                        <div>
+                                                            <span class="badge badge-success mr-1">9</span>
+                                                            <span class="badge badge-warning mr-1">1</span>
+                                                            <button class="btn btn-sm btn-link p-0">
+                                                                <i class="fas fa-chevron-right"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                                <li class="list-group-item px-0">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <div>
+                                                            <i class="fas fa-video-slash text-muted mr-2"></i>
+                                                            楼道监控
+                                                            <small class="text-muted">(6台设备)</small>
+                                                        </div>
+                                                        <div>
+                                                            <span class="badge badge-success mr-1">6</span>
+                                                            <button class="btn btn-sm btn-link p-0">
+                                                                <i class="fas fa-chevron-right"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 环境监控分组 -->
+                            <div class="col-md-6">
+                                <div class="card group-card">
+                                    <div class="card-body">
+                                        <div class="group-header">
+                                            <div class="group-icon bg-success-light text-success">
+                                                <i class="fas fa-thermometer-half"></i>
+                                            </div>
+                                            <div class="dropdown">
+                                                <button class="btn btn-link btn-sm p-0 text-muted" data-toggle="dropdown">
+                                                    <i class="fas fa-ellipsis-v"></i>
+                                                </button>
+                                                <div class="dropdown-menu dropdown-menu-right">
+                                                    <a class="dropdown-item" href="#"><i class="fas fa-eye"></i> 查看设备</a>
+                                                    <a class="dropdown-item" href="#"><i class="fas fa-edit"></i> 编辑分组</a>
+                                                    <a class="dropdown-item" href="#"><i class="fas fa-plus"></i> 添加设备</a>
+                                                    <a class="dropdown-item" href="#"><i class="fas fa-plus-circle"></i> 添加子分组</a>
+                                                    <div class="dropdown-divider"></div>
+                                                    <a class="dropdown-item text-danger" href="#"><i class="fas fa-trash"></i> 删除分组</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="group-title">
+                                            环境监控
+                                            <span class="badge badge-primary group-badge">主分组</span>
+                                        </div>
+                                        <p class="text-muted mt-2">用于环境监测的设备分组，包含温湿度传感器、空气质量监测仪等</p>
+                                        <div class="group-stats">
+                                            <div class="group-stat-item">
+                                                <div class="group-stat-icon">
+                                                    <i class="fas fa-server"></i>
+                                                </div>
+                                                <div class="group-stat-value">12</div>
+                                                <div class="group-stat-label">设备数</div>
+                                            </div>
+                                            <div class="group-stat-item">
+                                                <div class="group-stat-icon">
+                                                    <i class="fas fa-layer-group"></i>
+                                                </div>
+                                                <div class="group-stat-value">2</div>
+                                                <div class="group-stat-label">子分组</div>
+                                            </div>
+                                            <div class="group-stat-item">
+                                                <div class="group-stat-icon text-success">
+                                                    <i class="fas fa-check-circle"></i>
+                                                </div>
+                                                <div class="group-stat-value">11</div>
+                                                <div class="group-stat-label">在线</div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- 子分组列表 -->
+                                        <div class="mt-3 pt-3 border-top">
+                                            <h6>子分组</h6>
+                                            <ul class="list-group list-group-flush">
+                                                <li class="list-group-item px-0">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <div>
+                                                            <i class="fas fa-temperature-high text-muted mr-2"></i>
+                                                            温湿度监测
+                                                            <small class="text-muted">(8台设备)</small>
+                                                        </div>
+                                                        <div>
+                                                            <span class="badge badge-success mr-1">8</span>
+                                                            <button class="btn btn-sm btn-link p-0">
+                                                                <i class="fas fa-chevron-right"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                                <li class="list-group-item px-0">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <div>
+                                                            <i class="fas fa-wind text-muted mr-2"></i>
+                                                            空气质量监测
+                                                            <small class="text-muted">(4台设备)</small>
+                                                        </div>
+                                                        <div>
+                                                            <span class="badge badge-success mr-1">3</span>
+                                                            <span class="badge badge-danger mr-1">1</span>
+                                                            <button class="btn btn-sm btn-link p-0">
+                                                                <i class="fas fa-chevron-right"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 门禁系统分组 -->
+                            <div class="col-md-6">
+                                <div class="card group-card">
+                                    <div class="card-body">
+                                        <div class="group-header">
+                                            <div class="group-icon bg-warning-light text-warning">
+                                                <i class="fas fa-door-closed"></i>
+                                            </div>
+                                            <div class="dropdown">
+                                                <button class="btn btn-link btn-sm p-0 text-muted" data-toggle="dropdown">
+                                                    <i class="fas fa-ellipsis-v"></i>
+                                                </button>
+                                                <div class="dropdown-menu dropdown-menu-right">
+                                                    <a class="dropdown-item" href="#"><i class="fas fa-eye"></i> 查看设备</a>
+                                                    <a class="dropdown-item" href="#"><i class="fas fa-edit"></i> 编辑分组</a>
+                                                    <a class="dropdown-item" href="#"><i class="fas fa-plus"></i> 添加设备</a>
+                                                    <a class="dropdown-item" href="#"><i class="fas fa-plus-circle"></i> 添加子分组</a>
+                                                    <div class="dropdown-divider"></div>
+                                                    <a class="dropdown-item text-danger" href="#"><i class="fas fa-trash"></i> 删除分组</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="group-title">
+                                            门禁系统
+                                            <span class="badge badge-primary group-badge">主分组</span>
+                                        </div>
+                                        <p class="text-muted mt-2">门禁系统设备分组，包含门禁控制器、读卡器等</p>
+                                        <div class="group-stats">
+                                            <div class="group-stat-item">
+                                                <div class="group-stat-icon">
+                                                    <i class="fas fa-server"></i>
+                                                </div>
+                                                <div class="group-stat-value">10</div>
+                                                <div class="group-stat-label">设备数</div>
+                                            </div>
+                                            <div class="group-stat-item">
+                                                <div class="group-stat-icon">
+                                                    <i class="fas fa-layer-group"></i>
+                                                </div>
+                                                <div class="group-stat-value">2</div>
+                                                <div class="group-stat-label">子分组</div>
+                                            </div>
+                                            <div class="group-stat-item">
+                                                <div class="group-stat-icon text-success">
+                                                    <i class="fas fa-check-circle"></i>
+                                                </div>
+                                                <div class="group-stat-value">8</div>
+                                                <div class="group-stat-label">在线</div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- 子分组列表 -->
+                                        <div class="mt-3 pt-3 border-top">
+                                            <h6>子分组</h6>
+                                            <ul class="list-group list-group-flush">
+                                                <li class="list-group-item px-0">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <div>
+                                                            <i class="fas fa-door-open text-muted mr-2"></i>
+                                                            出入口门禁
+                                                            <small class="text-muted">(4台设备)</small>
+                                                        </div>
+                                                        <div>
+                                                            <span class="badge badge-success mr-1">4</span>
+                                                            <button class="btn btn-sm btn-link p-0">
+                                                                <i class="fas fa-chevron-right"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                                <li class="list-group-item px-0">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <div>
+                                                            <i class="fas fa-user-shield text-muted mr-2"></i>
+                                                            重要区域门禁
+                                                            <small class="text-muted">(6台设备)</small>
+                                                        </div>
+                                                        <div>
+                                                            <span class="badge badge-success mr-1">4</span>
+                                                            <span class="badge badge-warning mr-1">2</span>
+                                                            <button class="btn btn-sm btn-link p-0">
+                                                                <i class="fas fa-chevron-right"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 网络设备分组 -->
+                            <div class="col-md-6">
+                                <div class="card group-card">
+                                    <div class="card-body">
+                                        <div class="group-header">
+                                            <div class="group-icon bg-info-light text-info">
+                                                <i class="fas fa-network-wired"></i>
+                                            </div>
+                                            <div class="dropdown">
+                                                <button class="btn btn-link btn-sm p-0 text-muted" data-toggle="dropdown">
+                                                    <i class="fas fa-ellipsis-v"></i>
+                                                </button>
+                                                <div class="dropdown-menu dropdown-menu-right">
+                                                    <a class="dropdown-item" href="#"><i class="fas fa-eye"></i> 查看设备</a>
+                                                    <a class="dropdown-item" href="#"><i class="fas fa-edit"></i> 编辑分组</a>
+                                                    <a class="dropdown-item" href="#"><i class="fas fa-plus"></i> 添加设备</a>
+                                                    <a class="dropdown-item" href="#"><i class="fas fa-plus-circle"></i> 添加子分组</a>
+                                                    <div class="dropdown-divider"></div>
+                                                    <a class="dropdown-item text-danger" href="#"><i class="fas fa-trash"></i> 删除分组</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="group-title">
+                                            网络设备
+                                            <span class="badge badge-primary group-badge">主分组</span>
+                                        </div>
+                                        <p class="text-muted mt-2">网络基础设施设备分组，包含交换机、路由器等设备</p>
+                                        <div class="group-stats">
+                                            <div class="group-stat-item">
+                                                <div class="group-stat-icon">
+                                                    <i class="fas fa-server"></i>
+                                                </div>
+                                                <div class="group-stat-value">10</div>
+                                                <div class="group-stat-label">设备数</div>
+                                            </div>
+                                            <div class="group-stat-item">
+                                                <div class="group-stat-icon">
+                                                    <i class="fas fa-layer-group"></i>
+                                                </div>
+                                                <div class="group-stat-value">0</div>
+                                                <div class="group-stat-label">子分组</div>
+                                            </div>
+                                            <div class="group-stat-item">
+                                                <div class="group-stat-icon text-success">
+                                                    <i class="fas fa-check-circle"></i>
+                                                </div>
+                                                <div class="group-stat-value">10</div>
+                                                <div class="group-stat-label">在线</div>
+                                            </div>
+                                        </div>
+                                        <!-- 设备列表预览 -->
+                                        <div class="mt-3 pt-3 border-top">
+                                            <div class="d-flex justify-content-between mb-2">
+                                                <h6 class="mb-0">设备列表</h6>
+                                                <a href="#" class="small">查看全部</a>
+                                            </div>
+                                            <div class="table-responsive">
+                                                <table class="table table-sm">
+                                                    <tbody>
+                                                        <tr>
+                                                            <td class="pl-0">核心交换机</td>
+                                                            <td><small class="text-muted">192.168.0.1</small></td>
+                                                            <td class="text-right pr-0"><span class="badge badge-success">在线</span></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="pl-0">办公区路由器</td>
+                                                            <td><small class="text-muted">192.168.0.2</small></td>
+                                                            <td class="text-right pr-0"><span class="badge badge-success">在线</span></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="pl-0">一楼交换机</td>
+                                                            <td><small class="text-muted">192.168.1.1</small></td>
+                                                            <td class="text-right pr-0"><span class="badge badge-success">在线</span></td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../assets/js/jquery.min.js"></script>
+    <script src="../assets/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/scripts.js"></script>
+</body>
+</html> 

@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能监控系统 - 创建采集任务 - 设备选择</title>
+    <link href="https://unpkg.com/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --sidebar-width: 250px;
+            --topbar-height: 60px;
+            --primary-color: #1e3c72;
+            --secondary-color: #2a5298;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            background-color: #f5f7fb;
+        }
+        
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--primary-color), var(--secondary-color));
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            z-index: 1000;
+            transition: all 0.3s;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            color: white;
+        }
+        
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 20px;
+            min-height: 100vh;
+            transition: all 0.3s;
+        }
+        
+        .topbar {
+            height: var(--topbar-height);
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: var(--sidebar-width);
+            z-index: 999;
+            transition: all 0.3s;
+        }
+        
+        .content-area {
+            margin-top: calc(var(--topbar-height) + 20px);
+            padding-bottom: 20px;
+        }
+        
+        .logo {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 20px;
+            font-weight: bold;
+            height: var(--topbar-height);
+            display: flex;
+            align-items: center;
+        }
+        
+        .menu-item {
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+        }
+        
+        .menu-item:hover, .menu-item.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-left: 4px solid white;
+        }
+        
+        .menu-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+        
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 15px 20px;
+            font-weight: 600;
+        }
+        
+        .step-indicator {
+            display: flex;
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+        
+        .step-item {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+        
+        .step-number {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #e9ecef;
+            color: #6c757d;
+            margin: 0 auto 10px;
+            font-weight: 600;
+            position: relative;
+            z-index: 5;
+        }
+        
+        .step-title {
+            font-size: 14px;
+            color: #6c757d;
+        }
+        
+        .step-item.active .step-number {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .step-item.active .step-title {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .step-item.completed .step-number {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .step-item::after {
+            content: '';
+            position: absolute;
+            top: 18px;
+            left: 50%;
+            width: 100%;
+            height: 2px;
+            background-color: #e9ecef;
+            z-index: 1;
+        }
+        
+        .step-item:last-child::after {
+            display: none;
+        }
+        
+        .step-item.completed::after {
+            background-color: #28a745;
+        }
+        
+        /* 设备选择页面特有样式 */
+        .selection-panel {
+            min-height: 600px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .nav-pills .nav-link {
+            color: #495057;
+            border-radius: 0;
+            padding: 12px 15px;
+        }
+        
+        .nav-pills .nav-link.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .selection-content {
+            flex-grow: 1;
+            border: 1px solid #e9ecef;
+            border-top: none;
+            border-radius: 0 0 10px 10px;
+            padding: 20px;
+            background-color: white;
+        }
+        
+        .tree-view {
+            max-height: 450px;
+            overflow-y: auto;
+        }
+        
+        .tree-item {
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .tree-item:hover {
+            background-color: rgba(42, 82, 152, 0.05);
+        }
+        
+        .tree-item.selected {
+            background-color: rgba(42, 82, 152, 0.1);
+        }
+        
+        .tree-item i {
+            margin-right: 10px;
+            font-size: 14px;
+            width: 16px;
+            text-align: center;
+        }
+        
+        .tree-item-checkbox {
+            margin-right: 10px;
+        }
+        
+        .tree-item-count {
+            background-color: rgba(42, 82, 152, 0.1);
+            color: var(--primary-color);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-left: auto;
+        }
+        
+        .device-card {
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+        
+        .device-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .device-card.selected {
+            border-color: var(--primary-color);
+            background-color: rgba(42, 82, 152, 0.05);
+        }
+        
+        .device-card.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+        
+        .device-status {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-online {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+        
+        .status-offline {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+        
+        .status-maintenance {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+        
+        .device-img {
+            height: 120px;
+            background-color: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .device-img i {
+            font-size: 36px;
+            color: #adb5bd;
+        }
+        
+        .device-info {
+            padding: 12px;
+        }
+        
+        .tag-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            background-color: rgba(42, 82, 152, 0.1);
+            color: var(--primary-color);
+            padding: 5px 10px;
+            border-radius: 16px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        
+        .tag:hover {
+            background-color: rgba(42, 82, 152, 0.2);
+        }
+        
+        .tag.selected {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .selected-device-counter {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 30px;
+            padding: 12px 20px;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+        }
+        
+        .selected-device-counter .number {
+            margin: 0 8px;
+            font-size: 18px;
+        }
+        
+        .selected-device-counter button {
+            border: none;
+            background-color: white;
+            color: var(--primary-color);
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        .location-map {
+            height: 450px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .map-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://via.placeholder.com/800x450?text=园区地图') center/cover;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .map-overlay {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .map-legend {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background-color: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .map-legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        
+        .map-legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .map-marker {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .marker-camera {
+            background-color: #007bff;
+        }
+        
+        .marker-sensor {
+            background-color: #28a745;
+        }
+        
+        .marker-controller {
+            background-color: #ffc107;
+        }
+        
+        .marker-selected {
+            border: 3px solid white;
+            transform: scale(1.2);
+        }
+    </style>
+</head>
+<body>
+    <!-- 侧边导航栏 -->
+    <div class="sidebar">
+        <div class="logo">
+            <i class="fas fa-shield-alt me-2"></i> SkyEye 智能监控
+        </div>
+        <div class="menu-items mt-4">
+            <a href="dashboard.html" class="menu-item">
+                <i class="fas fa-tachometer-alt"></i> 控制台
+            </a>
+            <a href="monitoring.html" class="menu-item">
+                <i class="fas fa-video"></i> 监控管理
+            </a>
+            <a href="alerts.html" class="menu-item">
+                <i class="fas fa-bell"></i> 报警中心
+            </a>
+            <a href="analytics.html" class="menu-item">
+                <i class="fas fa-chart-line"></i> 数据分析
+            </a>
+            <a href="devices.html" class="menu-item">
+                <i class="fas fa-cog"></i> 设备管理
+            </a>
+            <a href="task_scheduling.html" class="menu-item active">
+                <i class="fas fa-tasks"></i> 任务调度
+            </a>
+            <a href="users.html" class="menu-item">
+                <i class="fas fa-user-shield"></i> 用户管理
+            </a>
+            <a href="history.html" class="menu-item">
+                <i class="fas fa-history"></i> 历史记录
+            </a>
+            <a href="settings.html" class="menu-item">
+                <i class="fas fa-sliders-h"></i> 系统设置
+            </a>
+        </div>
+    </div>
+
+    <!-- 顶部导航栏 -->
+    <div class="topbar">
+        <button type="button" class="btn btn-sm d-md-none" id="sidebarCollapse">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <div class="d-flex align-items-center ms-auto">
+            <div class="input-group search-box">
+                <input type="text" class="form-control form-control-sm" placeholder="搜索...">
+                <button class="btn btn-sm btn-outline-secondary" type="button">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+            
+            <button type="button" class="btn btn-sm position-relative ms-2">
+                <i class="far fa-bell"></i>
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    5
+                </span>
+            </button>
+            
+            <div class="dropdown ms-3">
+                <a class="dropdown-toggle d-flex align-items-center text-decoration-none" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <div class="rounded-circle bg-light d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                        <i class="fas fa-user text-secondary"></i>
+                    </div>
+                    <div class="ms-2 d-none d-sm-block">
+                        <div class="small fw-bold">管理员</div>
+                        <div class="small text-muted">系统管理员</div>
+                    </div>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-user-circle me-2"></i> 个人信息</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i> 账号设置</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt me-2"></i> 退出登录</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主内容区 -->
+    <div class="main-content">
+        <div class="content-area">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h4>创建采集任务</h4>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a href="dashboard.html">控制台</a></li>
+                            <li class="breadcrumb-item"><a href="task_scheduling.html">采集任务调度</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">设备选择</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div>
+                    <button class="btn btn-outline-secondary btn-sm me-2">
+                        <i class="fas fa-save me-1"></i> 保存草稿
+                    </button>
+                    <button class="btn btn-outline-secondary btn-sm">
+                        <i class="fas fa-times me-1"></i> 取消
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 步骤指示器 -->
+            <div class="step-indicator">
+                <div class="step-item completed">
+                    <div class="step-number"><i class="fas fa-check"></i></div>
+                    <div class="step-title">基本信息</div>
+                </div>
+                <div class="step-item active">
+                    <div class="step-number">2</div>
+                    <div class="step-title">设备选择</div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-title">指标配置</div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-title">调度设置</div>
+                </div>
+            </div>
+            
+            <!-- 主要内容区 -->
+            <div class="row">
+                <!-- 设备选择面板 -->
+                <div class="col-md-5">
+                    <div class="card selection-panel">
+                        <div class="card-header">
+                            <i class="fas fa-cog me-2"></i> 设备选择方式
+                        </div>
+                        
+                        <!-- 选择方式导航标签 -->
+                        <ul class="nav nav-pills nav-fill" id="selectionTypeTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="device-type-tab" data-bs-toggle="tab" data-bs-target="#device-type" type="button" role="tab" aria-controls="device-type" aria-selected="true">
+                                    <i class="fas fa-tags me-2"></i> 设备类型
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="location-tab" data-bs-toggle="tab" data-bs-target="#location" type="button" role="tab" aria-controls="location" aria-selected="false">
+                                    <i class="fas fa-map-marker-alt me-2"></i> 区域位置
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="tag-tab" data-bs-toggle="tab" data-bs-target="#tag" type="button" role="tab" aria-controls="tag" aria-selected="false">
+                                    <i class="fas fa-tag me-2"></i> 设备标签
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="devices-tab" data-bs-toggle="tab" data-bs-target="#devices" type="button" role="tab" aria-controls="devices" aria-selected="false">
+                                    <i class="fas fa-list me-2"></i> 具体设备
+                                </button>
+                            </li>
+                        </ul>
+                        
+                        <!-- 选择方式内容 -->
+                        <div class="selection-content tab-content" id="selectionTypeTabContent">
+                            <!-- 根据设备类型选择 -->
+                            <div class="tab-pane fade show active" id="device-type" role="tabpanel" aria-labelledby="device-type-tab">
+                                <div class="mb-3">
+                                    <input type="text" class="form-control" placeholder="搜索设备类型...">
+                                </div>
+                                
+                                <div class="tree-view">
+                                    <!-- 设备类型树 -->
+                                    <div class="tree-item selected">
+                                        <div class="form-check tree-item-checkbox">
+                                            <input class="form-check-input" type="checkbox" id="treeItem1" checked>
+                                        </div>
+                                        <i class="fas fa-folder"></i>
+                                        <span>所有设备</span>
+                                        <span class="tree-item-count">56</span>
+                                    </div>
+                                    
+                                    <div class="tree-item">
+                                        <div class="form-check tree-item-checkbox">
+                                            <input class="form-check-input" type="checkbox" id="treeItem2">
+                                        </div>
+                                        <i class="fas fa-video"></i>
+                                        <span>摄像头</span>
+                                        <span class="tree-item-count">24</span>
+                                    </div>
+                                    
+                                    <div class="tree-item" style="padding-left: 40px;">
+                                        <div class="form-check tree-item-checkbox">
+                                            <input class="form-check-input" type="checkbox" id="treeItem3">
+                                        </div>
+                                        <i class="fas fa-video"></i>
+                                        <span>高清摄像头</span>
+                                        <span class="tree-item-count">12</span>
+                                    </div>
+                                    
+                                    <div class="tree-item" style="padding-left: 40px;">
+                                        <div class="form-check tree-item-checkbox">
+                                            <input class="form-check-input" type="checkbox" id="treeItem4">
+                                        </div>
+                                        <i class="fas fa-video"></i>
+                                        <span>红外摄像头</span>
+                                        <span class="tree-item-count">8</span>
+                                    </div>
+                                    
+                                    <div class="tree-item" style="padding-left: 40px;">
+                                        <div class="form-check tree-item-checkbox">
+                                            <input class="form-check-input" type="checkbox" id="treeItem5">
+                                        </div>
+                                        <i class="fas fa-video"></i>
+                                        <span>云台摄像头</span>
+                                        <span class="tree-item-count">4</span>
+                                    </div>
+                                    
+                                    <div class="tree-item">
+                                        <div class="form-check tree-item-checkbox">
+                                            <input class="form-check-input" type="checkbox" id="treeItem6">
+                                        </div>
+                                        <i class="fas fa-microchip"></i>
+                                        <span>传感器</span>
+                                        <span class="tree-item-count">18</span>
+                                    </div>
+                                    
+                                    <div class="tree-item" style="padding-left: 40px;">
+                                        <div class="form-check tree-item-checkbox">
+                                            <input class="form-check-input" type="checkbox" id="treeItem7">
+                                        </div>
+                                        <i class="fas fa-thermometer-half"></i>
+                                        <span>温湿度传感器</span>
+                                        <span class="tree-item-count">8</span>
+                                    </div>
+                                    
+                                    <div class="tree-item" style="padding-left: 40px;">
+                                        <div class="form-check tree-item-checkbox">
+                                            <input class="form-check-input" type="checkbox" id="treeItem8">
+                                        </div>
+                                        <i class="fas fa-smog"></i>
+                                        <span>烟雾传感器</span>
+                                        <span class="tree-item-count">6</span>
+                                    </div>
+                                    
+                                    <div class="tree-item" style="padding-left: 40px;">
+                                        <div class="form-check tree-item-checkbox">
+                                            <input class="form-check-input" type="checkbox" id="treeItem9">
+                                        </div>
+                                        <i class="fas fa-fingerprint"></i>
+                                        <span>门禁传感器</span>
+                                        <span class="tree-item-count">4</span>
+                                    </div>
+                                    
+                                    <div class="tree-item">
+                                        <div class="form-check tree-item-checkbox">
+                                            <input class="form-check-input" type="checkbox" id="treeItem10">
+                                        </div>
+                                        <i class="fas fa-sliders-h"></i>
+                                        <span>控制器</span>
+                                        <span class="tree-item-count">14</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 根据区域位置选择 -->
+                            <div class="tab-pane fade" id="location" role="tabpanel" aria-labelledby="location-tab">
+                                <!-- 区域选择地图 -->
+                                <div class="location-map">
+                                    <div class="map-placeholder">
+                                        <!-- 园区地图 -->
+                                        <!-- 区域A -->
+                                        <div class="map-marker marker-camera" style="top: 30%; left: 25%;" title="摄像头区域A-1"></div>
+                                        <div class="map-marker marker-camera" style="top: 35%; left: 30%;" title="摄像头区域A-2"></div>
+                                        <div class="map-marker marker-sensor" style="top: 25%; left: 20%;" title="温度传感器区域A-1"></div>
+                                        
+                                        <!-- 区域B -->
+                                        <div class="map-marker marker-camera" style="top: 45%; left: 60%;" title="摄像头区域B-1"></div>
+                                        <div class="map-marker marker-camera" style="top: 50%; left: 65%;" title="摄像头区域B-2"></div>
+                                        <div class="map-marker marker-controller" style="top: 55%; left: 55%;" title="门禁控制器区域B-1"></div>
+                                        
+                                        <!-- 区域C -->
+                                        <div class="map-marker marker-camera" style="top: 70%; left: 40%;" title="摄像头区域C-1"></div>
+                                        <div class="map-marker marker-sensor" style="top: 75%; left: 35%;" title="烟雾传感器区域C-1"></div>
+                                        <div class="map-marker marker-controller" style="top: 65%; left: 45%;" title="环境控制器区域C-1"></div>
+                                    </div>
+                                    
+                                    <!-- 地图控制区域 -->
+                                    <div class="map-overlay">
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" id="showAllDevices" checked>
+                                            <label class="form-check-label" for="showAllDevices">
+                                                显示所有设备
+                                            </label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" id="showCameras" checked>
+                                            <label class="form-check-label" for="showCameras">
+                                                摄像头
+                                            </label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" id="showSensors" checked>
+                                            <label class="form-check-label" for="showSensors">
+                                                传感器
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="showControllers" checked>
+                                            <label class="form-check-label" for="showControllers">
+                                                控制器
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 地图图例 -->
+                                    <div class="map-legend">
+                                        <div class="mb-2 fw-bold">区域选择:</div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" id="selectZoneA">
+                                            <label class="form-check-label" for="selectZoneA">
+                                                区域A (3设备)
+                                            </label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" id="selectZoneB">
+                                            <label class="form-check-label" for="selectZoneB">
+                                                区域B (3设备)
+                                            </label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" id="selectZoneC">
+                                            <label class="form-check-label" for="selectZoneC">
+                                                区域C (3设备)
+                                            </label>
+                                        </div>
+                                        <button class="btn btn-sm btn-primary w-100 mt-2">确认选择</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 根据设备标签选择 -->
+                            <div class="tab-pane fade" id="tag" role="tabpanel" aria-labelledby="tag-tab">
+                                <div class="mb-3">
+                                    <label class="form-label">选择标签筛选设备</label>
+                                    <div class="tag-cloud">
+                                        <div class="tag">高清 <span class="ms-1">(12)</span></div>
+                                        <div class="tag">红外 <span class="ms-1">(8)</span></div>
+                                        <div class="tag">360度 <span class="ms-1">(4)</span></div>
+                                        <div class="tag">前门 <span class="ms-1">(6)</span></div>
+                                        <div class="tag">后门 <span class="ms-1">(5)</span></div>
+                                        <div class="tag">仓库 <span class="ms-1">(10)</span></div>
+                                        <div class="tag">办公区 <span class="ms-1">(8)</span></div>
+                                        <div class="tag">车库 <span class="ms-1">(4)</span></div>
+                                        <div class="tag">走廊 <span class="ms-1">(6)</span></div>
+                                        <div class="tag">门禁 <span class="ms-1">(4)</span></div>
+                                        <div class="tag">温度 <span class="ms-1">(8)</span></div>
+                                        <div class="tag">湿度 <span class="ms-1">(8)</span></div>
+                                        <div class="tag">烟雾 <span class="ms-1">(6)</span></div>
+                                        <div class="tag">重要 <span class="ms-1">(15)</span></div>
+                                        <div class="tag">备用 <span class="ms-1">(5)</span></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">标签组合方式</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="tagCombination" id="tagOr" checked>
+                                        <label class="form-check-label" for="tagOr">
+                                            或关系（任一标签匹配即选中设备）
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="tagCombination" id="tagAnd">
+                                        <label class="form-check-label" for="tagAnd">
+                                            与关系（所有标签都匹配才选中设备）
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i> 当前已选择 <strong>0</strong> 个标签，符合条件的设备有 <strong>0</strong> 台
+                                </div>
+                                
+                                <div class="mt-4">
+                                    <label class="form-label">已选标签</label>
+                                    <div class="tag-cloud">
+                                        <!-- 此处将显示用户已选择的标签 -->
+                                        <div class="alert alert-light text-center w-100 mb-0">尚未选择任何标签</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-grid gap-2 mt-4">
+                                    <button class="btn btn-primary">
+                                        <i class="fas fa-check-circle me-2"></i> 应用标签选择
+                                    </button>
+                                    <button class="btn btn-outline-secondary">
+                                        <i class="fas fa-times-circle me-2"></i> 清除选择
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- 选择具体设备 -->
+                            <div class="tab-pane fade" id="devices" role="tabpanel" aria-labelledby="devices-tab">
+                                <div class="mb-3">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" placeholder="搜索设备名称、ID或IP地址...">
+                                        <button class="btn btn-outline-secondary" type="button">
+                                            <i class="fas fa-search"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <button type="button" class="btn btn-outline-secondary active"><i class="fas fa-th-large me-1"></i> 卡片</button>
+                                            <button type="button" class="btn btn-outline-secondary"><i class="fas fa-list me-1"></i> 列表</button>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <select class="form-select form-select-sm">
+                                            <option selected>按名称排序</option>
+                                            <option>按状态排序</option>
+                                            <option>按类型排序</option>
+                                            <option>按最后上线时间排序</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="row device-grid">
+                                    <!-- 设备卡片 -->
+                                    <div class="col-md-6">
+                                        <div class="device-card">
+                                            <div class="device-status status-online">在线</div>
+                                            <div class="device-img">
+                                                <i class="fas fa-video"></i>
+                                            </div>
+                                            <div class="device-info">
+                                                <h6>摄像头-前门-01</h6>
+                                                <div class="small text-muted">类型: 高清摄像头</div>
+                                                <div class="small text-muted">IP: 192.168.1.101</div>
+                                                <div class="small text-muted mb-2">最后在线: 刚刚</div>
+                                                <div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="deviceCheck1">
+                                                        <label class="form-check-label" for="deviceCheck1">
+                                                            选择此设备
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="device-card">
+                                            <div class="device-status status-online">在线</div>
+                                            <div class="device-img">
+                                                <i class="fas fa-video"></i>
+                                            </div>
+                                            <div class="device-info">
+                                                <h6>摄像头-后门-02</h6>
+                                                <div class="small text-muted">类型: 红外摄像头</div>
+                                                <div class="small text-muted">IP: 192.168.1.102</div>
+                                                <div class="small text-muted mb-2">最后在线: 1分钟前</div>
+                                                <div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="deviceCheck2">
+                                                        <label class="form-check-label" for="deviceCheck2">
+                                                            选择此设备
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="device-card">
+                                            <div class="device-status status-maintenance">维护中</div>
+                                            <div class="device-img">
+                                                <i class="fas fa-thermometer-half"></i>
+                                            </div>
+                                            <div class="device-info">
+                                                <h6>温湿度-办公区-01</h6>
+                                                <div class="small text-muted">类型: 温湿度传感器</div>
+                                                <div class="small text-muted">IP: 192.168.1.201</div>
+                                                <div class="small text-muted mb-2">最后在线: 2小时前</div>
+                                                <div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="deviceCheck3">
+                                                        <label class="form-check-label" for="deviceCheck3">
+                                                            选择此设备
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="device-card">
+                                            <div class="device-status status-offline">离线</div>
+                                            <div class="device-img">
+                                                <i class="fas fa-smog"></i>
+                                            </div>
+                                            <div class="device-info">
+                                                <h6>烟雾-走廊-01</h6>
+                                                <div class="small text-muted">类型: 烟雾传感器</div>
+                                                <div class="small text-muted">IP: 192.168.1.205</div>
+                                                <div class="small text-muted mb-2">最后在线: 1天前</div>
+                                                <div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="deviceCheck4">
+                                                        <label class="form-check-label" for="deviceCheck4">
+                                                            选择此设备
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 分页 -->
+                                <nav aria-label="Page navigation example" class="mt-4">
+                                    <ul class="pagination justify-content-center">
+                                        <li class="page-item disabled">
+                                            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">上一页</a>
+                                        </li>
+                                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                        <li class="page-item">
+                                            <a class="page-link" href="#">下一页</a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 已选设备信息 -->
+                <div class="col-md-7">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="fas fa-check-circle me-2"></i> 已选设备
+                            </div>
+                            <div>
+                                <button class="btn btn-sm btn-outline-danger">
+                                    <i class="fas fa-trash me-1"></i> 清除所有选择
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-info mb-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="fas fa-info-circle me-2"></i> 已选择 <strong>6</strong> 台设备
+                                    </div>
+                                    <div>
+                                        <button class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-download me-1"></i> 导出设备列表
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 设备类型统计 -->
+                            <div class="row mb-4">
+                                <div class="col-md-4">
+                                    <div class="card border-0 bg-light">
+                                        <div class="card-body text-center">
+                                            <div class="fw-bold text-primary mb-2">
+                                                <i class="fas fa-video fs-4"></i>
+                                            </div>
+                                            <h5>4</h5>
+                                            <div class="small text-muted">摄像头</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card border-0 bg-light">
+                                        <div class="card-body text-center">
+                                            <div class="fw-bold text-success mb-2">
+                                                <i class="fas fa-microchip fs-4"></i>
+                                            </div>
+                                            <h5>2</h5>
+                                            <div class="small text-muted">传感器</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card border-0 bg-light">
+                                        <div class="card-body text-center">
+                                            <div class="fw-bold text-warning mb-2">
+                                                <i class="fas fa-sliders-h fs-4"></i>
+                                            </div>
+                                            <h5>0</h5>
+                                            <div class="small text-muted">控制器</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 已选设备表格 -->
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col" style="width: 40px">#</th>
+                                            <th scope="col">设备名称</th>
+                                            <th scope="col">设备类型</th>
+                                            <th scope="col">状态</th>
+                                            <th scope="col">位置</th>
+                                            <th scope="col" style="width: 100px">操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <th scope="row">1</th>
+                                            <td>摄像头-前门-01</td>
+                                            <td>高清摄像头</td>
+                                            <td><span class="badge bg-success">在线</span></td>
+                                            <td>区域A-前门</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-danger">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">2</th>
+                                            <td>摄像头-后门-02</td>
+                                            <td>红外摄像头</td>
+                                            <td><span class="badge bg-success">在线</span></td>
+                                            <td>区域A-后门</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-danger">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">3</th>
+                                            <td>摄像头-办公室-01</td>
+                                            <td>高清摄像头</td>
+                                            <td><span class="badge bg-success">在线</span></td>
+                                            <td>区域B-办公室</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-danger">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">4</th>
+                                            <td>摄像头-仓库-01</td>
+                                            <td>红外摄像头</td>
+                                            <td><span class="badge bg-warning text-dark">维护中</span></td>
+                                            <td>区域C-仓库</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-danger">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">5</th>
+                                            <td>温湿度-办公区-01</td>
+                                            <td>温湿度传感器</td>
+                                            <td><span class="badge bg-warning text-dark">维护中</span></td>
+                                            <td>区域B-办公室</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-danger">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">6</th>
+                                            <td>烟雾-走廊-01</td>
+                                            <td>烟雾传感器</td>
+                                            <td><span class="badge bg-danger">离线</span></td>
+                                            <td>区域A-走廊</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-danger">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <div class="alert alert-warning mt-3">
+                                <i class="fas fa-exclamation-triangle me-2"></i> 注意：已选设备中有 <strong>1</strong> 台设备处于离线状态，可能会影响任务执行
+                            </div>
+                        </div>
+                        
+                        <div class="card-footer text-center">
+                            <div class="d-flex justify-content-between">
+                                <a href="task_create.html" class="btn btn-outline-secondary">
+                                    <i class="fas fa-arrow-left me-1"></i> 上一步
+                                </a>
+                                <a href="#" class="btn btn-primary">
+                                    下一步 <i class="fas fa-arrow-right ms-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 已选设备计数器 -->
+    <div class="selected-device-counter">
+        <i class="fas fa-check-circle"></i>
+        <span class="number">6</span> 已选设备
+        <button onclick="window.location.href='#'">下一步</button>
+    </div>
+
+    <script src="https://unpkg.com/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 设备类型选择
+            const treeItems = document.querySelectorAll('.tree-item');
+            treeItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const checkbox = this.querySelector('input[type="checkbox"]');
+                    checkbox.checked = !checkbox.checked;
+                    
+                    if (checkbox.checked) {
+                        this.classList.add('selected');
+                    } else {
+                        this.classList.remove('selected');
+                    }
+                });
+            });
+            
+            // 标签选择
+            const tags = document.querySelectorAll('#tag .tag');
+            tags.forEach(tag => {
+                tag.addEventListener('click', function() {
+                    this.classList.toggle('selected');
+                });
+            });
+            
+            // 设备卡片选择
+            const deviceCards = document.querySelectorAll('.device-card');
+            deviceCards.forEach(card => {
+                card.addEventListener('click', function(e) {
+                    if (!e.target.closest('.form-check')) {
+                        const checkbox = this.querySelector('input[type="checkbox"]');
+                        checkbox.checked = !checkbox.checked;
+                        
+                        if (checkbox.checked) {
+                            this.classList.add('selected');
+                        } else {
+                            this.classList.remove('selected');
+                        }
+                    }
+                });
+            });
+            
+            // 地图标记选择
+            const mapMarkers = document.querySelectorAll('.map-marker');
+            mapMarkers.forEach(marker => {
+                marker.addEventListener('click', function() {
+                    this.classList.toggle('marker-selected');
+                });
+            });
+        });
+    </script>
+</body>
+</html> 

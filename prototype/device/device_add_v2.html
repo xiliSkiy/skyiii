@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyEye - 添加设备 - 基本信息</title>
+    <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../assets/css/fontawesome.min.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <style>
+        .wizard-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+        .wizard-step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+        .wizard-step:not(:last-child):after {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            width: 100%;
+            height: 2px;
+            background-color: #e9ecef;
+            z-index: 1;
+        }
+        .wizard-step.active:not(:last-child):after {
+            background-color: #007bff;
+        }
+        .wizard-step-icon {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            color: #6c757d;
+            line-height: 24px;
+            font-size: 12px;
+            position: relative;
+            z-index: 2;
+            margin-bottom: 5px;
+        }
+        .wizard-step.active .wizard-step-icon {
+            background-color: #007bff;
+            color: #fff;
+        }
+        .wizard-step.completed .wizard-step-icon {
+            background-color: #28a745;
+            color: #fff;
+        }
+        .wizard-step-text {
+            font-size: 14px;
+            color: #6c757d;
+        }
+        .wizard-step.active .wizard-step-text {
+            color: #007bff;
+            font-weight: 600;
+        }
+        .template-card {
+            cursor: pointer;
+            border: 1px solid #ddd;
+            transition: all 0.2s;
+        }
+        .template-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .template-card.selected {
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+        }
+        .template-card-header {
+            background-color: #f8f9fa;
+            padding: 10px;
+            text-align: center;
+        }
+        .template-card-body {
+            padding: 15px;
+        }
+        .form-section {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        .form-section:last-child {
+            border-bottom: none;
+        }
+        .form-section-title {
+            margin-bottom: 15px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 左侧导航 -->
+        <div class="sidebar">
+            <div class="logo">
+                <img src="../assets/images/logo.png" alt="SkyEye Logo">
+                <h2>SkyEye</h2>
+            </div>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="../dashboard.html"><i class="fas fa-tachometer-alt"></i> 控制台</a></li>
+                    
+                    <!-- 设备管理菜单（展开） -->
+                    <li class="active">
+                        <a href="#deviceSubMenu" data-toggle="collapse" aria-expanded="true">
+                            <i class="fas fa-server"></i> 设备管理
+                            <i class="fas fa-angle-down"></i>
+                        </a>
+                        <ul class="collapse show" id="deviceSubMenu">
+                            <li><a href="devices_v2.html">设备列表</a></li>
+                            <li class="active"><a href="device_add_v2.html">添加设备</a></li>
+                            <li><a href="device_types.html">设备类型管理</a></li>
+                            <li><a href="device_areas.html">区域管理</a></li>
+                            <li><a href="device_groups.html">设备分组</a></li>
+                            <li><a href="device_tags.html">标签管理</a></li>
+                            <li><a href="device_templates.html">设备模板</a></li>
+                            <li><a href="device_protocols.html">设备协议</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li><a href="../monitoring.html"><i class="fas fa-video"></i> 监控管理</a></li>
+                    <li><a href="../alerts.html"><i class="fas fa-bell"></i> 报警中心</a></li>
+                    <li><a href="../task_scheduling.html"><i class="fas fa-tasks"></i> 任务调度</a></li>
+                    <li><a href="../analytics.html"><i class="fas fa-chart-line"></i> 数据分析</a></li>
+                    <li><a href="../settings.html"><i class="fas fa-cog"></i> 系统设置</a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <!-- 顶部导航 -->
+            <header class="top-bar">
+                <div class="search-container">
+                    <input type="text" placeholder="搜索...">
+                    <i class="fas fa-search"></i>
+                </div>
+                <div class="top-bar-right">
+                    <div class="notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge">3</span>
+                    </div>
+                    <div class="user-profile">
+                        <img src="../assets/images/user-avatar.png" alt="用户头像">
+                        <span>管理员</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- 内容区域 -->
+            <div class="content">
+                <div class="content-header">
+                    <h2>添加设备</h2>
+                    <div class="actions">
+                        <button class="btn btn-secondary" onclick="location.href='devices_v2.html'">
+                            <i class="fas fa-arrow-left"></i> 返回设备列表
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 步骤条 -->
+                <div class="wizard-steps">
+                    <div class="wizard-step active">
+                        <div class="wizard-step-icon">1</div>
+                        <div class="wizard-step-text">基本信息</div>
+                    </div>
+                    <div class="wizard-step">
+                        <div class="wizard-step-icon">2</div>
+                        <div class="wizard-step-text">网络设置</div>
+                    </div>
+                    <div class="wizard-step">
+                        <div class="wizard-step-icon">3</div>
+                        <div class="wizard-step-text">高级配置</div>
+                    </div>
+                    <div class="wizard-step">
+                        <div class="wizard-step-icon">4</div>
+                        <div class="wizard-step-text">确认信息</div>
+                    </div>
+                </div>
+
+                <!-- 添加设备表单 -->
+                <div class="card">
+                    <div class="card-body">
+                        <!-- 模板选择 -->
+                        <div class="form-section">
+                            <div class="form-section-title">
+                                <i class="fas fa-copy"></i> 从模板创建
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="card template-card" onclick="selectTemplate(this, 1)">
+                                        <div class="template-card-header">
+                                            <i class="fas fa-video fa-2x"></i>
+                                        </div>
+                                        <div class="template-card-body">
+                                            <h6>会议室摄像头</h6>
+                                            <small class="text-muted">通用会议室网络摄像头配置</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card template-card" onclick="selectTemplate(this, 2)">
+                                        <div class="template-card-header">
+                                            <i class="fas fa-temperature-high fa-2x"></i>
+                                        </div>
+                                        <div class="template-card-body">
+                                            <h6>温湿度传感器</h6>
+                                            <small class="text-muted">支持MODBUS协议的环境传感器</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card template-card" onclick="selectTemplate(this, 3)">
+                                        <div class="template-card-header">
+                                            <i class="fas fa-door-open fa-2x"></i>
+                                        </div>
+                                        <div class="template-card-body">
+                                            <h6>门禁控制器</h6>
+                                            <small class="text-muted">网络门禁控制系统</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card template-card" onclick="selectTemplate(this, 0)">
+                                        <div class="template-card-header">
+                                            <i class="fas fa-plus fa-2x"></i>
+                                        </div>
+                                        <div class="template-card-body">
+                                            <h6>自定义设备</h6>
+                                            <small class="text-muted">从零开始配置设备</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 基本信息 -->
+                        <div class="form-section">
+                            <div class="form-section-title">
+                                <i class="fas fa-info-circle"></i> 设备基本信息
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="deviceName">设备名称 <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="deviceName" placeholder="请输入设备名称" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="deviceCode">设备编码 <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="deviceCode" placeholder="请输入设备编码" required>
+                                            <div class="input-group-append">
+                                                <button class="btn btn-outline-secondary" type="button" onclick="generateRandomCode()">自动生成</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 设备类型 -->
+                        <div class="form-section">
+                            <div class="form-section-title">
+                                <i class="fas fa-tags"></i> 设备类型
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="deviceTypeSelect">选择设备类型 <span class="text-danger">*</span></label>
+                                        <select class="form-control" id="deviceTypeSelect" onchange="deviceTypeChanged()">
+                                            <option value="">请选择设备类型</option>
+                                            <optgroup label="摄像头">
+                                                <option value="CAMERA_NETWORK">网络摄像头</option>
+                                                <option value="CAMERA_ANALOG">模拟摄像头</option>
+                                                <option value="CAMERA_PTZ">云台摄像头</option>
+                                            </optgroup>
+                                            <optgroup label="传感器">
+                                                <option value="SENSOR_TEMPERATURE">温度传感器</option>
+                                                <option value="SENSOR_HUMIDITY">湿度传感器</option>
+                                                <option value="SENSOR_TEMP_HUMID">温湿度传感器</option>
+                                            </optgroup>
+                                            <optgroup label="门禁">
+                                                <option value="ACCESS_CARD">刷卡门禁</option>
+                                                <option value="ACCESS_FINGERPRINT">指纹门禁</option>
+                                                <option value="ACCESS_FACE">人脸门禁</option>
+                                            </optgroup>
+                                            <optgroup label="其他">
+                                                <option value="OTHER_DEVICE">其他设备</option>
+                                            </optgroup>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 设备类型特有属性 -->
+                            <div id="deviceTypeProperties" style="display: none;">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <h6>设备类型特有属性</h6>
+                                        <small class="text-muted mb-3 d-block">根据选择的设备类型，需要配置特定的属性</small>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="deviceModel">设备型号</label>
+                                            <input type="text" class="form-control" id="deviceModel" placeholder="请输入设备型号">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="manufacturer">制造商</label>
+                                            <input type="text" class="form-control" id="manufacturer" placeholder="请输入制造商">
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- 摄像头特有属性 -->
+                                <div id="cameraProperties" style="display: none;">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="resolution">分辨率</label>
+                                                <select class="form-control" id="resolution">
+                                                    <option value="1080P">1920×1080 (1080P)</option>
+                                                    <option value="720P">1280×720 (720P)</option>
+                                                    <option value="4K">3840×2160 (4K)</option>
+                                                    <option value="OTHER">其他</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="frameRate">帧率</label>
+                                                <select class="form-control" id="frameRate">
+                                                    <option value="25">25fps</option>
+                                                    <option value="30">30fps</option>
+                                                    <option value="50">50fps</option>
+                                                    <option value="60">60fps</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="hasPtz">支持云台</label>
+                                                <select class="form-control" id="hasPtz">
+                                                    <option value="false">否</option>
+                                                    <option value="true">是</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- 传感器特有属性 -->
+                                <div id="sensorProperties" style="display: none;">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="sensorPrecision">精度</label>
+                                                <input type="text" class="form-control" id="sensorPrecision" placeholder="如: ±0.5℃">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="measureRange">测量范围</label>
+                                                <input type="text" class="form-control" id="measureRange" placeholder="如: -20℃~50℃">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="pollingInterval">采集周期(秒)</label>
+                                                <input type="number" class="form-control" id="pollingInterval" placeholder="单位: 秒">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 区域选择 -->
+                        <div class="form-section">
+                            <div class="form-section-title">
+                                <i class="fas fa-map-marker-alt"></i> 所属区域
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="areaSelect">选择区域</label>
+                                        <select class="form-control" id="areaSelect">
+                                            <option value="">请选择区域</option>
+                                            <optgroup label="北区">
+                                                <option value="NORTH_1F">北区一层</option>
+                                                <option value="NORTH_2F">北区二层</option>
+                                                <option value="NORTH_3F">北区三层</option>
+                                            </optgroup>
+                                            <optgroup label="南区">
+                                                <option value="SOUTH_1F">南区一层</option>
+                                                <option value="SOUTH_2F">南区二层</option>
+                                            </optgroup>
+                                            <optgroup label="东区">
+                                                <option value="EAST_1F">东区一层</option>
+                                            </optgroup>
+                                            <optgroup label="西区">
+                                                <option value="WEST_1F">西区一层</option>
+                                            </optgroup>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="locationDetail">详细位置</label>
+                                        <input type="text" class="form-control" id="locationDetail" placeholder="请输入详细位置描述">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 设备描述 -->
+                        <div class="form-section">
+                            <div class="form-section-title">
+                                <i class="fas fa-edit"></i> 设备描述
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="deviceDescription">描述</label>
+                                        <textarea class="form-control" id="deviceDescription" rows="3" placeholder="请输入设备描述信息"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 操作按钮 -->
+                        <div class="form-actions text-right">
+                            <button type="button" class="btn btn-secondary" onclick="location.href='devices_v2.html'">取消</button>
+                            <button type="button" class="btn btn-primary" onclick="location.href='device_add_network_v2.html'">下一步</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../assets/js/jquery.min.js"></script>
+    <script src="../assets/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/scripts.js"></script>
+    <script>
+        function selectTemplate(element, templateId) {
+            // 移除所有模板的选中状态
+            $('.template-card').removeClass('selected');
+            
+            // 给当前模板添加选中状态
+            $(element).addClass('selected');
+            
+            // 根据所选模板填充表单
+            if (templateId === 1) { // 会议室摄像头
+                $('#deviceName').val('会议室摄像头');
+                $('#deviceCode').val('CAM-MEETING-' + Math.floor(1000 + Math.random() * 9000));
+                $('#deviceTypeSelect').val('CAMERA_NETWORK');
+                $('#deviceDescription').val('会议室监控摄像头，用于视频会议及监控');
+                $('#areaSelect').val('NORTH_2F');
+                $('#locationDetail').val('二层会议室');
+                deviceTypeChanged();
+                $('#deviceTypeProperties').show();
+                $('#cameraProperties').show();
+                $('#sensorProperties').hide();
+                $('#resolution').val('1080P');
+                $('#frameRate').val('30');
+                $('#hasPtz').val('true');
+            } else if (templateId === 2) { // 温湿度传感器
+                $('#deviceName').val('温湿度传感器');
+                $('#deviceCode').val('SENSOR-TH-' + Math.floor(1000 + Math.random() * 9000));
+                $('#deviceTypeSelect').val('SENSOR_TEMP_HUMID');
+                $('#deviceDescription').val('环境温湿度监测传感器');
+                $('#areaSelect').val('EAST_1F');
+                $('#locationDetail').val('一层数据中心');
+                deviceTypeChanged();
+                $('#deviceTypeProperties').show();
+                $('#cameraProperties').hide();
+                $('#sensorProperties').show();
+                $('#sensorPrecision').val('±0.5℃/±3%RH');
+                $('#measureRange').val('-20℃~50℃/0~100%RH');
+                $('#pollingInterval').val('60');
+            } else if (templateId === 3) { // 门禁控制器
+                $('#deviceName').val('门禁控制器');
+                $('#deviceCode').val('ACCESS-' + Math.floor(1000 + Math.random() * 9000));
+                $('#deviceTypeSelect').val('ACCESS_CARD');
+                $('#deviceDescription').val('门禁控制系统，支持刷卡和密码');
+                $('#areaSelect').val('SOUTH_1F');
+                $('#locationDetail').val('一层前台入口');
+                deviceTypeChanged();
+                $('#deviceTypeProperties').show();
+                $('#cameraProperties').hide();
+                $('#sensorProperties').hide();
+            } else {
+                // 清空表单
+                $('#deviceName').val('');
+                $('#deviceCode').val('');
+                $('#deviceTypeSelect').val('');
+                $('#deviceDescription').val('');
+                $('#areaSelect').val('');
+                $('#locationDetail').val('');
+                $('#deviceTypeProperties').hide();
+                $('#cameraProperties').hide();
+                $('#sensorProperties').hide();
+            }
+        }
+        
+        function deviceTypeChanged() {
+            var deviceType = $('#deviceTypeSelect').val();
+            
+            if (deviceType) {
+                $('#deviceTypeProperties').show();
+                
+                // 根据设备类型显示不同的属性表单
+                if (deviceType.indexOf('CAMERA') === 0) {
+                    $('#cameraProperties').show();
+                    $('#sensorProperties').hide();
+                } else if (deviceType.indexOf('SENSOR') === 0) {
+                    $('#cameraProperties').hide();
+                    $('#sensorProperties').show();
+                } else {
+                    $('#cameraProperties').hide();
+                    $('#sensorProperties').hide();
+                }
+            } else {
+                $('#deviceTypeProperties').hide();
+                $('#cameraProperties').hide();
+                $('#sensorProperties').hide();
+            }
+        }
+        
+        function generateRandomCode() {
+            var prefix = '';
+            var deviceType = $('#deviceTypeSelect').val();
+            
+            if (deviceType.indexOf('CAMERA') === 0) {
+                prefix = 'CAM-';
+            } else if (deviceType.indexOf('SENSOR') === 0) {
+                prefix = 'SENSOR-';
+            } else if (deviceType.indexOf('ACCESS') === 0) {
+                prefix = 'ACCESS-';
+            } else {
+                prefix = 'DEV-';
+            }
+            
+            var randomCode = prefix + Math.floor(10000 + Math.random() * 90000);
+            $('#deviceCode').val(randomCode);
+        }
+    </script>
+</body>
+</html> 

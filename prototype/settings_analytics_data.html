@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能监控系统 - 数据采集设置</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --sidebar-width: 250px;
+            --topbar-height: 60px;
+            --primary-color: #1e3c72;
+            --secondary-color: #2a5298;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            background-color: #f5f7fb;
+        }
+        
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--primary-color), var(--secondary-color));
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            z-index: 1000;
+            transition: all 0.3s;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            color: white;
+        }
+        
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 20px;
+            min-height: 100vh;
+            transition: all 0.3s;
+        }
+        
+        .topbar {
+            height: var(--topbar-height);
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: var(--sidebar-width);
+            z-index: 999;
+            transition: all 0.3s;
+        }
+        
+        .content-area {
+            margin-top: calc(var(--topbar-height) + 20px);
+            padding-bottom: 20px;
+        }
+        
+        .logo {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 20px;
+            font-weight: bold;
+            height: var(--topbar-height);
+            display: flex;
+            align-items: center;
+        }
+        
+        .menu-item {
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+        }
+        
+        .menu-item:hover, .menu-item.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-left: 4px solid white;
+        }
+        
+        .menu-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+        
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 15px 20px;
+            font-weight: 600;
+        }
+        
+        .data-status {
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .status-normal {
+            background-color: rgba(40, 167, 69, 0.1);
+            border: 1px solid rgba(40, 167, 69, 0.2);
+        }
+        
+        .status-warning {
+            background-color: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.2);
+        }
+
+        .data-source-card {
+            border: 1px solid #f0f0f0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: box-shadow 0.3s;
+        }
+        
+        .data-source-card:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .data-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .data-title {
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .data-badge {
+            font-size: 12px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+        
+        .badge-enabled {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+        
+        .badge-disabled {
+            background-color: rgba(108, 117, 125, 0.1);
+            color: #6c757d;
+        }
+
+        .progress {
+            height: 8px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 侧边导航栏 -->
+    <div class="sidebar">
+        <div class="logo">
+            <i class="fas fa-shield-alt me-2"></i> SkyEye 智能监控
+        </div>
+        <div class="menu-items mt-4">
+            <a href="dashboard.html" class="menu-item">
+                <i class="fas fa-tachometer-alt"></i> 控制台
+            </a>
+            <a href="monitoring.html" class="menu-item">
+                <i class="fas fa-video"></i> 监控管理
+            </a>
+            <a href="alerts.html" class="menu-item">
+                <i class="fas fa-bell"></i> 报警中心
+            </a>
+            <a href="analytics.html" class="menu-item">
+                <i class="fas fa-chart-line"></i> 数据分析
+            </a>
+            <a href="devices.html" class="menu-item">
+                <i class="fas fa-cog"></i> 设备管理
+            </a>
+            <a href="users.html" class="menu-item">
+                <i class="fas fa-user-shield"></i> 用户管理
+            </a>
+            <a href="history.html" class="menu-item">
+                <i class="fas fa-history"></i> 历史记录
+            </a>
+            <a href="settings.html" class="menu-item active">
+                <i class="fas fa-sliders-h"></i> 系统设置
+            </a>
+        </div>
+    </div>
+
+    <!-- 顶部导航栏 -->
+    <div class="topbar">
+        <button type="button" class="btn btn-sm d-md-none" id="sidebarCollapse">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <div class="d-flex align-items-center ms-auto">
+            <div class="input-group search-box">
+                <input type="text" class="form-control form-control-sm" placeholder="搜索...">
+                <button class="btn btn-sm btn-outline-secondary" type="button">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+            
+            <button type="button" class="btn btn-sm position-relative ms-2">
+                <i class="far fa-bell"></i>
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    5
+                </span>
+            </button>
+            
+            <div class="dropdown ms-3">
+                <a class="dropdown-toggle d-flex align-items-center text-decoration-none" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <div class="rounded-circle bg-light d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                        <i class="fas fa-user text-secondary"></i>
+                    </div>
+                    <div class="ms-2 d-none d-sm-block">
+                        <div class="small fw-bold">管理员</div>
+                        <div class="small text-muted">系统管理员</div>
+                    </div>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-user-circle me-2"></i> 个人信息</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i> 账号设置</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt me-2"></i> 退出登录</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主内容区 -->
+    <div class="main-content">
+        <div class="content-area">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h4>数据采集设置</h4>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a href="settings.html">系统设置</a></li>
+                            <li class="breadcrumb-item"><a href="settings_analytics.html">智能分析</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">数据采集</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div>
+                    <button class="btn btn-primary btn-sm">
+                        <i class="fas fa-save me-1"></i> 保存配置
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 数据采集状态概览 -->
+            <div class="data-status status-normal mb-4">
+                <div class="d-flex align-items-center">
+                    <div class="me-3">
+                        <i class="fas fa-database text-success fa-2x"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-1">数据采集系统运行正常</h5>
+                        <p class="mb-0 text-muted">所有数据源连接正常，数据流稳定</p>
+                    </div>
+                    <div class="ms-auto">
+                        <button class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-sync-alt me-1"></i> 刷新状态
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 数据采集页面内容 -->
+            <div class="row">
+                <div class="col-md-8">
+                    <!-- 数据源管理 -->
+                    <div class="card mb-4">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <span><i class="fas fa-plug me-2"></i> 数据源管理</span>
+                            <button class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-plus me-1"></i> 添加数据源
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <!-- 数据源项 1 -->
+                            <div class="data-source-card">
+                                <div class="data-header">
+                                    <div class="data-title">视频流数据源</div>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="videoSource" checked>
+                                    </div>
+                                </div>
+                                <div class="mb-2">
+                                    <span class="data-badge badge-enabled me-2">已启用</span>
+                                    <span class="badge bg-success">连接正常</span>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">连接设置</label>
+                                    <div class="mb-2">
+                                        <label class="form-label small">连接地址</label>
+                                        <input type="text" class="form-control" value="rtsp://10.10.1.50:554/stream">
+                                    </div>
+                                    <div class="mb-2">
+                                        <label class="form-label small">认证信息</label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" placeholder="用户名" value="admin">
+                                            <input type="password" class="form-control" placeholder="密码" value="********">
+                                        </div>
+                                    </div>
+                                    <div class="mb-2">
+                                        <label class="form-label small">视频参数</label>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <select class="form-select">
+                                                    <option>720p</option>
+                                                    <option selected>1080p</option>
+                                                    <option>4K</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <select class="form-select">
+                                                    <option>15fps</option>
+                                                    <option selected>30fps</option>
+                                                    <option>60fps</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex">
+                                    <button class="btn btn-sm btn-outline-primary me-2">
+                                        <i class="fas fa-edit me-1"></i> 编辑
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary me-2">
+                                        <i class="fas fa-sync me-1"></i> 测试连接
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-info">
+                                        <i class="fas fa-info-circle me-1"></i> 详情
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- 数据源项 2 -->
+                            <div class="data-source-card">
+                                <div class="data-header">
+                                    <div class="data-title">传感器数据源</div>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="sensorSource" checked>
+                                    </div>
+                                </div>
+                                <div class="mb-2">
+                                    <span class="data-badge badge-enabled me-2">已启用</span>
+                                    <span class="badge bg-success">连接正常</span>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">连接设置</label>
+                                    <div class="mb-2">
+                                        <label class="form-label small">接口类型</label>
+                                        <select class="form-select">
+                                            <option>REST API</option>
+                                            <option selected>MQTT</option>
+                                            <option>WebSocket</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-2">
+                                        <label class="form-label small">连接参数</label>
+                                        <input type="text" class="form-control mb-2" placeholder="服务器地址" value="mqtt://10.10.1.100:1883">
+                                        <input type="text" class="form-control" placeholder="订阅主题" value="sensors/+/data">
+                                    </div>
+                                </div>
+                                <div class="d-flex">
+                                    <button class="btn btn-sm btn-outline-primary me-2">
+                                        <i class="fas fa-edit me-1"></i> 编辑
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary me-2">
+                                        <i class="fas fa-sync me-1"></i> 测试连接
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-info">
+                                        <i class="fas fa-info-circle me-1"></i> 详情
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 数据采集策略 -->
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-cogs me-2"></i> 采集策略
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">时间设置</label>
+                                        <div class="mb-3">
+                                            <label class="form-label">采集频率</label>
+                                            <select class="form-select">
+                                                <option>实时</option>
+                                                <option selected>每30秒</option>
+                                                <option>每分钟</option>
+                                                <option>每5分钟</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">数据保留期限</label>
+                                            <select class="form-select">
+                                                <option>7天</option>
+                                                <option selected>30天</option>
+                                                <option>90天</option>
+                                                <option>180天</option>
+                                                <option>365天</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">采集时段</label>
+                                            <div class="row mb-2">
+                                                <div class="col-6">
+                                                    <label class="form-label small">开始时间</label>
+                                                    <input type="time" class="form-control" value="00:00">
+                                                </div>
+                                                <div class="col-6">
+                                                    <label class="form-label small">结束时间</label>
+                                                    <input type="time" class="form-control" value="23:59">
+                                                </div>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="fullTimeCollect" checked>
+                                                <label class="form-check-label" for="fullTimeCollect">
+                                                    全天采集
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">数据过滤</label>
+                                        <div class="mb-3">
+                                            <label class="form-label">采集设备范围</label>
+                                            <select class="form-select" multiple>
+                                                <option selected>室外摄像头</option>
+                                                <option selected>室内摄像头</option>
+                                                <option selected>门禁传感器</option>
+                                                <option selected>温湿度传感器</option>
+                                                <option>烟雾传感器</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">数据预处理</label>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="preProcess1" checked>
+                                                <label class="form-check-label" for="preProcess1">
+                                                    数据清洗
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="preProcess2" checked>
+                                                <label class="form-check-label" for="preProcess2">
+                                                    异常值过滤
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="preProcess3">
+                                                <label class="form-check-label" for="preProcess3">
+                                                    数据压缩
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-grid gap-2 mt-3">
+                                <button class="btn btn-primary">
+                                    <i class="fas fa-save me-1"></i> 保存策略
+                                </button>
+                                <button class="btn btn-outline-primary">
+                                    <i class="fas fa-play me-1"></i> 立即执行
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <!-- 数据采集状态卡片 -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-chart-pie me-2"></i> 采集状态
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label">今日采集进度</label>
+                                <div class="progress mb-2">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 78%" aria-valuenow="78" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                                <div class="d-flex justify-content-between small text-muted">
+                                    <span>已完成: 78%</span>
+                                    <span>剩余: 22%</span>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>运行中数据源</div>
+                                <div class="fw-bold">6/8</div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>今日采集数据量</div>
+                                <div>2.8 GB</div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>总采集任务数</div>
+                                <div>24</div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>成功率</div>
+                                <div>99.2%</div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>最后更新时间</div>
+                                <div>10:25:36</div>
+                            </div>
+                            <hr>
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-outline-primary">
+                                    <i class="fas fa-sync me-1"></i> 刷新状态
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 数据存储配置卡片 -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-hdd me-2"></i> 数据存储配置
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label">存储类型</label>
+                                <select class="form-select mb-3">
+                                    <option>本地存储</option>
+                                    <option selected>分布式存储</option>
+                                    <option>云存储</option>
+                                </select>
+                                <div class="mb-3">
+                                    <label class="form-label">存储策略</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="storageType1" checked>
+                                        <label class="form-check-label" for="storageType1">
+                                            自动清理过期数据
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="storageType2" checked>
+                                        <label class="form-check-label" for="storageType2">
+                                            数据自动备份
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="storageType3">
+                                        <label class="form-check-label" for="storageType3">
+                                            冷热数据分离
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="alert alert-info">
+                                <h6 class="alert-heading">存储说明</h6>
+                                <ul class="mb-0">
+                                    <li>不同类型数据有不同存储周期</li>
+                                    <li>重要数据会自动备份</li>
+                                    <li>支持存储池动态扩容</li>
+                                </ul>
+                            </div>
+                            <div class="d-grid">
+                                <button class="btn btn-outline-primary">
+                                    <i class="fas fa-cog me-1"></i> 高级设置
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 任务调度卡片 -->
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-tasks me-2"></i> 任务调度
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label">调度模式</label>
+                                <select class="form-select mb-3">
+                                    <option>手动调度</option>
+                                    <option selected>自动调度</option>
+                                    <option>混合调度</option>
+                                </select>
+                                <div class="mb-3">
+                                    <label class="form-label">定时任务</label>
+                                    <div class="input-group mb-2">
+                                        <input type="text" class="form-control" value="每日数据同步">
+                                        <input type="time" class="form-control" value="03:00">
+                                    </div>
+                                    <div class="input-group mb-2">
+                                        <input type="text" class="form-control" value="存储空间检查">
+                                        <input type="time" class="form-control" value="00:30">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-grid">
+                                <button class="btn btn-outline-primary">
+                                    <i class="fas fa-plus me-1"></i> 添加任务
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

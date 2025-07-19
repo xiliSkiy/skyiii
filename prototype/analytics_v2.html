@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能监控系统 - AI增强数据分析 V2</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --sidebar-width: 250px;
+            --topbar-height: 60px;
+            --primary-color: #1e3c72;
+            --secondary-color: #2a5298;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.7;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            background-color: #f5f7fb;
+        }
+        
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--primary-color), var(--secondary-color));
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            z-index: 1000;
+            transition: all 0.3s;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            color: white;
+        }
+        
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 20px;
+            min-height: 100vh;
+            transition: all 0.3s;
+        }
+        
+        .topbar {
+            height: var(--topbar-height);
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: var(--sidebar-width);
+            z-index: 999;
+            transition: all 0.3s;
+        }
+        
+        .content-area {
+            margin-top: calc(var(--topbar-height) + 20px);
+            padding-bottom: 20px;
+        }
+        
+        .logo {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 20px;
+            font-weight: bold;
+            height: var(--topbar-height);
+            display: flex;
+            align-items: center;
+        }
+        
+        .menu-item {
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+        }
+        
+        .menu-item:hover, .menu-item.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-left: 4px solid white;
+        }
+        
+        .menu-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .stat-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .chart-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .chart-placeholder {
+            width: 100%;
+            height: 300px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 侧边导航栏 -->
+    <div class="sidebar">
+        <div class="logo">
+            <i class="fas fa-shield-alt me-2"></i> SkyEye 智能监控
+        </div>
+        <div class="menu-items mt-4">
+            <a href="dashboard.html" class="menu-item">
+                <i class="fas fa-tachometer-alt"></i> 控制台
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-video"></i> 监控管理
+            </a>
+            <a href="alerts.html" class="menu-item">
+                <i class="fas fa-bell"></i> 报警中心
+            </a>
+            <a href="analytics_v2.html" class="menu-item active">
+                <i class="fas fa-chart-line"></i> AI增强数据分析
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-cog"></i> 设备管理
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-user-shield"></i> 用户管理
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-history"></i> 历史记录
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-sliders-h"></i> 系统设置
+            </a>
+        </div>
+    </div>
+
+    <!-- 顶部导航栏 -->
+    <div class="topbar">
+        <button type="button" class="btn btn-sm d-md-none" id="sidebarCollapse">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <div class="d-flex align-items-center ms-auto">
+            <div class="search-box">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-input" placeholder="搜索...">
+            </div>
+            
+            <button type="button" class="icon-btn">
+                <i class="far fa-bell"></i>
+                <span class="badge-circle">5</span>
+            </button>
+            
+            <div class="topbar-divider"></div>
+            
+            <div class="dropdown">
+                <div class="user-profile" id="dropdownMenuButton" data-bs-toggle="dropdown">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-info me-2">
+                        <div class="user-name">管理员</div>
+                        <div class="user-role">系统管理员</div>
+                    </div>
+                    <i class="fas fa-chevron-down" style="font-size: 12px;"></i>
+                </div>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-user-circle me-2"></i> 个人信息</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i> 账号设置</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt me-2"></i> 退出登录</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主内容区 -->
+    <div class="main-content">
+        <div class="content-area">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h4>AI增强数据分析</h4>
+                    <p class="text-muted mb-0"><i class="fas fa-robot me-1"></i> 由人工智能大模型提供支持</p>
+                </div>
+                <div>
+                    <button class="btn btn-outline-secondary btn-sm me-2"><i class="fas fa-file-export me-1"></i> 导出报表</button>
+                    <button class="btn btn-primary btn-sm"><i class="fas fa-sync-alt me-1"></i> 刷新数据</button>
+                </div>
+            </div>
+            
+            <!-- AI分析助手 -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary bg-opacity-10">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="fas fa-brain me-2 text-primary"></i>
+                            <span class="fw-bold">AI分析助手</span>
+                        </div>
+                        <button class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-plus me-1"></i> 新建分析
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="请输入您想了解的数据分析问题..." aria-label="分析问题">
+                            <button class="btn btn-primary" type="button">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                        <div class="form-text">例如：分析最近一周的异常事件趋势、预测下周人流量、比较各区域报警频率</div>
+                    </div>
+                    
+                    <div class="ai-conversation p-3 bg-light rounded mb-3" style="max-height: 200px; overflow-y: auto;">
+                        <div class="ai-message mb-2">
+                            <div class="d-flex">
+                                <div class="me-2">
+                                    <span class="badge rounded-pill bg-primary">AI</span>
+                                </div>
+                                <div>您好，我可以帮您分析哪些数据?</div>
+                            </div>
+                        </div>
+                        <div class="user-message mb-2">
+                            <div class="d-flex justify-content-end">
+                                <div class="text-end">
+                                    分析最近一周的异常事件趋势
+                                </div>
+                                <div class="ms-2">
+                                    <span class="badge rounded-pill bg-secondary">您</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ai-message">
+                            <div class="d-flex">
+                                <div class="me-2">
+                                    <span class="badge rounded-pill bg-primary">AI</span>
+                                </div>
+                                <div>
+                                    <p class="mb-1">分析结果如下:</p>
+                                    <ol class="mb-2">
+                                        <li>最近一周共检测到37起异常事件，比上周减少12%</li>
+                                        <li>主要异常类型为人员聚集(42%)和未授权访问(28%)</li>
+                                        <li>发现周三14:00-16:00是异常高发时段</li>
+                                    </ol>
+                                    <div>
+                                        <button class="btn btn-sm btn-outline-primary me-1">查看详细分析</button>
+                                        <button class="btn btn-sm btn-outline-secondary me-1">导出报告</button>
+                                        <button class="btn btn-sm btn-outline-warning">设置预警</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 筛选条件 -->
+                    <div class="row">
+                        <div class="col-md-4 mb-3 mb-md-0">
+                            <label class="form-label">时间范围</label>
+                            <select class="form-select form-select-sm">
+                                <option>今天</option>
+                                <option>昨天</option>
+                                <option selected>最近7天</option>
+                                <option>最近30天</option>
+                                <option>本月</option>
+                                <option>上月</option>
+                                <option>自定义...</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3 mb-md-0">
+                            <label class="form-label">设备组</label>
+                            <select class="form-select form-select-sm">
+                                <option selected>所有设备</option>
+                                <option>入口监控组</option>
+                                <option>办公区监控组</option>
+                                <option>仓库监控组</option>
+                                <option>停车场监控组</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">分析类型</label>
+                            <select class="form-select form-select-sm">
+                                <option selected>全部</option>
+                                <option>人员检测</option>
+                                <option>行为分析</option>
+                                <option>事件统计</option>
+                                <option>报警分析</option>
+                                <option>预测分析</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 智能统计卡片 -->
+            <div class="row mb-4">
+                <div class="col-xl-3 col-md-6 mb-3">
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-2">总人流量</h6>
+                                <h3 class="mb-0">8,547</h3>
+                                <small class="text-success">+12.5% <i class="fas fa-arrow-up"></i></small>
+                                <div class="text-primary mt-1" style="font-size: 12px;">
+                                    <i class="fas fa-chart-line me-1"></i> 预测下周增长15%
+                                </div>
+                            </div>
+                            <div class="bg-primary bg-opacity-10 p-3 rounded text-primary">
+                                <i class="fas fa-users fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-3">
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-2">报警事件</h6>
+                                <h3 class="mb-0">156</h3>
+                                <small class="text-danger">+8.3% <i class="fas fa-arrow-up"></i></small>
+                                <div class="text-danger mt-1" style="font-size: 12px;">
+                                    <i class="fas fa-exclamation-circle me-1"></i> 异常增长需关注
+                                </div>
+                            </div>
+                            <div class="bg-danger bg-opacity-10 p-3 rounded text-danger">
+                                <i class="fas fa-exclamation-triangle fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-3">
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-2">平均停留时间</h6>
+                                <h3 class="mb-0">24.5<small>分钟</small></h3>
+                                <small class="text-success">-2.1% <i class="fas fa-arrow-down"></i></small>
+                                <div class="text-info mt-1" style="font-size: 12px;">
+                                    <i class="fas fa-thumbs-up me-1"></i> 符合安全标准
+                                </div>
+                            </div>
+                            <div class="bg-info bg-opacity-10 p-3 rounded text-info">
+                                <i class="fas fa-clock fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-3">
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-2">设备健康率</h6>
+                                <h3 class="mb-0">96.8<small>%</small></h3>
+                                <small class="text-success">+1.2% <i class="fas fa-arrow-up"></i></small>
+                                <div class="text-warning mt-1" style="font-size: 12px;">
+                                    <i class="fas fa-wrench me-1"></i> 3台设备需维护
+                                </div>
+                            </div>
+                            <div class="bg-success bg-opacity-10 p-3 rounded text-success">
+                                <i class="fas fa-heartbeat fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 图表行 1：智能预测分析 -->
+            <div class="row mb-4">
+                <div class="col-lg-8">
+                    <div class="chart-container">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div>
+                                <h5 class="mb-0">人流量趋势与预测分析</h5>
+                                <small class="text-muted"><i class="fas fa-robot me-1"></i> AI预测准确率: 92.7%</small>
+                            </div>
+                            <div>
+                                <div class="btn-group me-2">
+                                    <button class="btn btn-sm btn-outline-secondary">日</button>
+                                    <button class="btn btn-sm btn-outline-secondary active">周</button>
+                                    <button class="btn btn-sm btn-outline-secondary">月</button>
+                                </div>
+                                <button class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-magic me-1"></i> 智能分析
+                                </button>
+                            </div>
+                        </div>
+                        <div class="chart-placeholder position-relative">
+                            <img src="https://via.placeholder.com/800x300/f8f9fa/777777?text=人流量趋势与预测折线图" alt="人流量趋势与预测图" style="max-width: 100%; height: auto;">
+                            <!-- 模拟预测区域 -->
+                            <div class="position-absolute" style="top: 10px; right: 10px; background: rgba(255,255,255,0.9); padding: 8px; border-radius: 4px; border: 1px solid #ddd;">
+                                <div class="d-flex align-items-center mb-1">
+                                    <div style="width: 12px; height: 3px; background-color: #1e3c72; margin-right: 5px;"></div>
+                                    <small>历史数据</small>
+                                </div>
+                                <div class="d-flex align-items-center mb-1">
+                                    <div style="width: 12px; height: 3px; background-color: #ff6b6b; margin-right: 5px;"></div>
+                                    <small>AI预测</small>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <div style="width: 12px; height: 12px; background-color: rgba(255,107,107,0.2); margin-right: 5px;"></div>
+                                    <small>置信区间</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-2 p-2 bg-light rounded">
+                            <small class="text-muted"><i class="fas fa-lightbulb me-1 text-warning"></i> <strong>AI洞察:</strong> 预计下周二至周四人流量将增加25%，建议增加安保人员配置。</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="chart-container">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div>
+                                <h5 class="mb-0">人员行为模式分析</h5>
+                                <small class="text-muted"><i class="fas fa-brain me-1"></i> 基于深度学习</small>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" id="dropdownMenuButton" data-bs-toggle="dropdown">
+                                    最近7天
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <li><a class="dropdown-item" href="#">今天</a></li>
+                                    <li><a class="dropdown-item" href="#">昨天</a></li>
+                                    <li><a class="dropdown-item active" href="#">最近7天</a></li>
+                                    <li><a class="dropdown-item" href="#">最近30天</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="chart-placeholder">
+                            <img src="https://via.placeholder.com/400x300/f8f9fa/777777?text=人员行为模式分析" alt="人员行为模式分析" style="max-width: 100%; height: auto;">
+                        </div>
+                        <div class="mt-2 p-2 bg-light rounded">
+                            <small class="text-muted"><i class="fas fa-exclamation-circle me-1 text-danger"></i> <strong>异常检测:</strong> 检测到3处异常聚集行为，可能存在安全风险。</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 图表行 2：异常分析与预测 -->
+            <div class="row mb-4">
+                <div class="col-lg-6">
+                    <div class="chart-container">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div>
+                                <h5 class="mb-0">异常事件智能分析</h5>
+                                <small class="text-muted"><i class="fas fa-shield-alt me-1"></i> 自动风险评估</small>
+                            </div>
+                            <div>
+                                <button class="btn btn-sm btn-outline-danger me-2">
+                                    <i class="fas fa-bell me-1"></i> 设置预警
+                                </button>
+                                <div class="dropdown d-inline-block">
+                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" id="alarmTypeDropdown" data-bs-toggle="dropdown">
+                                        最近7天
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="alarmTypeDropdown">
+                                        <li><a class="dropdown-item" href="#">今天</a></li>
+                                        <li><a class="dropdown-item" href="#">昨天</a></li>
+                                        <li><a class="dropdown-item active" href="#">最近7天</a></li>
+                                        <li><a class="dropdown-item" href="#">最近30天</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chart-placeholder">
+                            <img src="https://via.placeholder.com/600x300/f8f9fa/777777?text=异常事件智能分析" alt="异常事件智能分析" style="max-width: 100%; height: auto;">
+                        </div>
+                        <div class="mt-2">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <div><i class="fas fa-circle text-danger me-1" style="font-size: 10px;"></i> 高风险异常: 12起</div>
+                                <button class="btn btn-sm btn-link p-0">查看详情</button>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div><i class="fas fa-circle text-warning me-1" style="font-size: 10px;"></i> 中风险异常: 25起</div>
+                                <button class="btn btn-sm btn-link p-0">查看详情</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="chart-container">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div>
+                                <h5 class="mb-0">设备故障预测</h5>
+                                <small class="text-muted"><i class="fas fa-cogs me-1"></i> 预防性维护建议</small>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" id="devicePerformanceDropdown" data-bs-toggle="dropdown">
+                                    最近7天
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="devicePerformanceDropdown">
+                                    <li><a class="dropdown-item" href="#">今天</a></li>
+                                    <li><a class="dropdown-item" href="#">昨天</a></li>
+                                    <li><a class="dropdown-item active" href="#">最近7天</a></li>
+                                    <li><a class="dropdown-item" href="#">最近30天</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="chart-placeholder">
+                            <img src="https://via.placeholder.com/600x300/f8f9fa/777777?text=设备故障预测分析" alt="设备故障预测" style="max-width: 100%; height: auto;">
+                        </div>
+                        <div class="alert alert-warning mt-2 mb-0 py-2">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <div>
+                                    <strong>AI预警:</strong> 停车场摄像头#03预计将在5天内发生故障，建议提前更换电源模块。
+                                    <button class="btn btn-sm btn-warning mt-1">创建维护工单</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 图表行 3：AI增强热力图分析 -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="chart-container">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div>
+                                <h5 class="mb-0">AI增强热力图分析</h5>
+                                <small class="text-muted"><i class="fas fa-fire-alt me-1"></i> 智能识别关注区域</small>
+                            </div>
+                            <div>
+                                <div class="btn-group me-2">
+                                    <button class="btn btn-sm btn-outline-secondary">人流量</button>
+                                    <button class="btn btn-sm btn-outline-secondary active">停留时间</button>
+                                    <button class="btn btn-sm btn-outline-secondary">异常行为</button>
+                                </div>
+                                <div class="dropdown d-inline-block">
+                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" id="heatmapDropdown" data-bs-toggle="dropdown">
+                                        一楼大厅
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="heatmapDropdown">
+                                        <li><a class="dropdown-item active" href="#">一楼大厅</a></li>
+                                        <li><a class="dropdown-item" href="#">二楼办公区</a></li>
+                                        <li><a class="dropdown-item" href="#">仓库区域</a></li>
+                                        <li><a class="dropdown-item" href="#">停车场</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chart-placeholder position-relative" style="height: 400px;">
+                            <img src="https://via.placeholder.com/1200x400/f8f9fa/777777?text=AI增强热力图分析" alt="AI增强热力图" style="max-width: 100%; height: auto;">
+                            
+                            <!-- 模拟AI标记点 -->
+                            <div class="position-absolute" style="top: 30%; left: 25%; background-color: rgba(255,0,0,0.2); width: 40px; height: 40px; border-radius: 50%; border: 2px solid red; animation: pulse 2s infinite;"></div>
+                            <div class="position-absolute" style="top: 45%; left: 60%; background-color: rgba(255,0,0,0.2); width: 30px; height: 30px; border-radius: 50%; border: 2px solid red; animation: pulse 2s infinite;"></div>
+                            
+                            <!-- 模拟AI注释 -->
+                            <div class="position-absolute" style="top: 25%; left: 28%; background: rgba(255,255,255,0.9); padding: 5px 10px; border-radius: 4px; border: 1px solid #ddd; font-size: 12px;">
+                                <strong>异常聚集点 #1</strong><br>
+                                风险等级: 高<br>
+                                持续时间: 15分钟
+                            </div>
+                        </div>
+                        
+                        <!-- AI分析结果 -->
+                        <div class="row mt-3">
+                            <div class="col-md-4">
+                                <div class="card border-0 bg-light">
+                                    <div class="card-body py-2">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-map-marker-alt text-danger me-2"></i>
+                                            <div>
+                                                <h6 class="mb-0">热点区域</h6>
+                                                <small>入口处与电梯口</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card border-0 bg-light">
+                                    <div class="card-body py-2">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-clock text-warning me-2"></i>
+                                            <div>
+                                                <h6 class="mb-0">高峰时段</h6>
+                                                <small>09:00-10:30, 17:00-18:30</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card border-0 bg-light">
+                                    <div class="card-body py-2">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-lightbulb text-primary me-2"></i>
+                                            <div>
+                                                <h6 class="mb-0">AI建议</h6>
+                                                <small>增加入口处安保人员配置</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 新增：智能数据探索 -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="chart-container">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div>
+                                <h5 class="mb-0">智能数据探索</h5>
+                                <small class="text-muted"><i class="fas fa-search me-1"></i> 自动发现数据关联</small>
+                            </div>
+                            <button class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-plus me-1"></i> 创建自定义分析
+                            </button>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card mb-3">
+                                    <div class="card-header bg-light">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <strong>AI发现: 人流量与报警事件关联</strong>
+                                            <span class="badge bg-primary">95% 置信度</span>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="chart-placeholder" style="height: 200px;">
+                                            <img src="https://via.placeholder.com/600x200/f8f9fa/777777?text=人流量与报警事件关联分析" alt="关联分析" style="max-width: 100%; height: auto;">
+                                        </div>
+                                        <p class="mt-2 mb-0 text-muted small">
+                                            <i class="fas fa-info-circle me-1"></i> 人流量超过每小时2000人次时，报警事件增加率达到173%
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card mb-3">
+                                    <div class="card-header bg-light">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <strong>AI发现: 天气因素影响</strong>
+                                            <span class="badge bg-primary">92% 置信度</span>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="chart-placeholder" style="height: 200px;">
+                                            <img src="https://via.placeholder.com/600x200/f8f9fa/777777?text=天气因素影响分析" alt="天气影响分析" style="max-width: 100%; height: auto;">
+                                        </div>
+                                        <p class="mt-2 mb-0 text-muted small">
+                                            <i class="fas fa-info-circle me-1"></i> 雨天时停车场区域异常事件增加62%，主要为车辆碰撞事件
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 智能数据明细 -->
+            <div class="chart-container mt-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h5 class="mb-0">智能数据明细</h5>
+                        <small class="text-muted"><i class="fas fa-table me-1"></i> 自动标记异常与风险</small>
+                    </div>
+                    <div>
+                        <div class="input-group input-group-sm me-2 d-inline-flex" style="width: 200px;">
+                            <input type="text" class="form-control" placeholder="搜索设备...">
+                            <button class="btn btn-outline-secondary" type="button"><i class="fas fa-search"></i></button>
+                        </div>
+                        <button class="btn btn-sm btn-outline-secondary me-2"><i class="fas fa-filter me-1"></i> 筛选</button>
+                        <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-download me-1"></i> 导出</button>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>设备名称</th>
+                                <th>位置</th>
+                                <th>人流量</th>
+                                <th>警报次数</th>
+                                <th>峰值时间</th>
+                                <th>设备状态</th>
+                                <th>AI评估</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>前门监控</td>
+                                <td>一楼大厅</td>
+                                <td>2,453 <small class="text-success">↑12%</small></td>
+                                <td>12</td>
+                                <td>08:30 - 09:30</td>
+                                <td><span class="badge bg-success">正常</span></td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="progress flex-grow-1" style="height: 6px;">
+                                            <div class="progress-bar bg-success" role="progressbar" style="width: 85%"></div>
+                                        </div>
+                                        <span class="ms-2">85%</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                            操作
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#"><i class="fas fa-eye me-2"></i>查看详情</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fas fa-chart-line me-2"></i>查看趋势</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>配置</a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>后门监控</td>
+                                <td>后门通道</td>
+                                <td>1,248 <small class="text-danger">↓5%</small></td>
+                                <td>8</td>
+                                <td>12:00 - 13:00</td>
+                                <td><span class="badge bg-success">正常</span></td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="progress flex-grow-1" style="height: 6px;">
+                                            <div class="progress-bar bg-success" role="progressbar" style="width: 92%"></div>
+                                        </div>
+                                        <span class="ms-2">92%</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                            操作
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#"><i class="fas fa-eye me-2"></i>查看详情</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fas fa-chart-line me-2"></i>查看趋势</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>配置</a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>办公区监控</td>
+                                <td>二楼办公区</td>
+                                <td>3,125 <small class="text-success">↑18%</small></td>
+                                <td>5</td>
+                                <td>09:00 - 10:00</td>
+                                <td><span class="badge bg-success">正常</span></td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="progress flex-grow-1" style="height: 6px;">
+                                            <div class="progress-bar bg-success" role="progressbar" style="width: 95%"></div>
+                                        </div>
+                                        <span class="ms-2">95%</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                            操作
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#"><i class="fas fa-eye me-2"></i>查看详情</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fas fa-chart-line me-2"></i>查看趋势</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>配置</a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="table-warning">
+                                <td>停车场监控</td>
+                                <td>地下停车场</td>
+                                <td>1,721 <small class="text-success">↑7%</small></td>
+                                <td>15 <span class="badge rounded-pill bg-danger ms-1">高</span></td>
+                                <td>18:00 - 19:00</td>
+                                <td><span class="badge bg-warning text-dark">信号弱</span></td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="progress flex-grow-1" style="height: 6px;">
+                                            <div class="progress-bar bg-warning" role="progressbar" style="width: 65%"></div>
+                                        </div>
+                                        <span class="ms-2">65%</span>
+                                    </div>
+                                    <small class="text-danger"><i class="fas fa-exclamation-circle me-1"></i>预计5天内故障</small>
+                                </td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-outline-warning dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                            操作
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#"><i class="fas fa-eye me-2"></i>查看详情</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fas fa-chart-line me-2"></i>查看趋势</a></li>
+                                            <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-wrench me-2"></i>创建维护工单</a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>仓库监控</td>
+                                <td>仓库区域</td>
+                                <td>876 <small class="text-danger">↓2%</small></td>
+                                <td>2</td>
+                                <td>14:00 - 15:00</td>
+                                <td><span class="badge bg-success">正常</span></td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="progress flex-grow-1" style="height: 6px;">
+                                            <div class="progress-bar bg-success" role="progressbar" style="width: 89%"></div>
+                                        </div>
+                                        <span class="ms-2">89%</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                            操作
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#"><i class="fas fa-eye me-2"></i>查看详情</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fas fa-chart-line me-2"></i>查看趋势</a></li>
+                                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>配置</a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="text-muted small">
+                        显示 1 至 5 条，共 24 条记录
+                    </div>
+                    <nav>
+                        <ul class="pagination pagination-sm justify-content-end mb-0">
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" tabindex="-1">上一页</a>
+                            </li>
+                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item">
+                                <a class="page-link" href="#">下一页</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            
+            <!-- 页脚 -->
+            <div class="text-center mt-4 text-muted small">
+                <p>© 2024 SkyEye 智能监控系统 | AI分析引擎版本: 2.5.3 | 上次数据更新: 2024-06-29 14:42:30</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

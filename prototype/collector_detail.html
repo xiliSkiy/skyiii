@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyEye - 采集器详情</title>
+    <link href="https://unpkg.com/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        .sidebar {
+            background-color: #343a40;
+            color: #fff;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 100;
+            padding: 0;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        }
+        .sidebar .nav-link {
+            color: #ced4da;
+            padding: 0.75rem 1.25rem;
+        }
+        .sidebar .nav-link.active {
+            color: #fff;
+            background-color: rgba(255,255,255,0.1);
+        }
+        .sidebar .nav-link:hover {
+            color: #fff;
+            background-color: rgba(255,255,255,0.05);
+        }
+        .sidebar-heading {
+            padding: 0.75rem 1rem;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1rem;
+            color: #818896;
+        }
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+        .card {
+            border-radius: 0.5rem;
+            box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075);
+        }
+        .header-bar {
+            background-color: #fff;
+            border-bottom: 1px solid #e9ecef;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+        }
+        .info-label {
+            font-weight: bold;
+            color: #495057;
+        }
+        .nav-tabs .nav-link {
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: #495057;
+        }
+        .nav-tabs .nav-link.active {
+            border-bottom: 3px solid #007bff;
+            color: #007bff;
+            background-color: transparent;
+        }
+        .resource-chart {
+            height: 8px;
+            border-radius: 4px;
+            margin-top: 8px;
+            margin-bottom: 4px;
+            background-color: #e9ecef;
+        }
+        .resource-chart .usage {
+            height: 100%;
+            border-radius: 4px;
+            background-color: #007bff;
+        }
+        .usage-high {
+            background-color: #dc3545;
+        }
+        .metrics-tag {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 16px;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            background-color: #e9ecef;
+        }
+        .small-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+        .small-stat-item {
+            text-align: center;
+            padding: 10px;
+            flex: 1;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            margin: 0 5px;
+        }
+        .small-stat-item:first-child {
+            margin-left: 0;
+        }
+        .small-stat-item:last-child {
+            margin-right: 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- 侧边栏 -->
+    <div class="sidebar col-md-3 col-lg-2 d-md-block">
+        <div class="position-sticky pt-3">
+            <div class="d-flex align-items-center justify-content-center py-3">
+                <h4>SkyEye</h4>
+            </div>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-speedometer2 me-2"></i>
+                        控制台
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-display me-2"></i>
+                        设备管理
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-camera-video me-2"></i>
+                        监控管理
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-bell me-2"></i>
+                        报警中心
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-graph-up me-2"></i>
+                        数据分析
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-calendar3 me-2"></i>
+                        任务调度
+                    </a>
+                </li>
+
+                <div class="sidebar-heading mt-3">系统设置</div>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-gear me-2"></i>
+                        基本设置
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="settings_metrics.html">
+                        <i class="bi bi-bar-chart me-2"></i>
+                        指标配置
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="collector_management.html">
+                        <i class="bi bi-cpu me-2"></i>
+                        采集器管理
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-people me-2"></i>
+                        用户管理
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 主要内容 -->
+    <div class="main-content">
+        <!-- 头部导航 -->
+        <div class="header-bar rounded">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a href="#">系统设置</a></li>
+                            <li class="breadcrumb-item"><a href="collector_management.html">采集器管理</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">核心区采集器</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div>
+                    <span class="me-3">管理员</span>
+                    <a href="#" class="text-decoration-none">
+                        <i class="bi bi-box-arrow-right"></i> 退出
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 标题与操作按钮 -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4><i class="bi bi-cpu me-2"></i> 核心区采集器</h4>
+            <div>
+                <button class="btn btn-outline-secondary me-2">
+                    <i class="bi bi-pencil"></i> 编辑
+                </button>
+                <button class="btn btn-outline-primary me-2">
+                    <i class="bi bi-arrow-repeat"></i> 重启
+                </button>
+                <button class="btn btn-outline-danger">
+                    <i class="bi bi-trash"></i> 删除
+                </button>
+            </div>
+        </div>
+
+        <!-- 选项卡 -->
+        <ul class="nav nav-tabs mb-4">
+            <li class="nav-item">
+                <a class="nav-link active" href="#">基本信息</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">采集能力</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">关联设备</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">当前任务</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">监控指标</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">日志</a>
+            </li>
+        </ul>
+
+        <!-- 基本信息与状态卡片 -->
+        <div class="row">
+            <!-- 基本信息卡片 -->
+            <div class="col-md-7">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0"><i class="bi bi-info-circle me-2"></i> 基本信息</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-3 info-label">ID</div>
+                            <div class="col-md-9">collector-001-xyz</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-3 info-label">名称</div>
+                            <div class="col-md-9">核心区采集器</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-3 info-label">部署位置</div>
+                            <div class="col-md-9">主数据中心A区</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-3 info-label">IP地址</div>
+                            <div class="col-md-9">10.0.1.15</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-3 info-label">版本</div>
+                            <div class="col-md-9">v2.1.3</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-3 info-label">启动时间</div>
+                            <div class="col-md-9">2023-06-15 08:30:42</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-3 info-label">运行时长</div>
+                            <div class="col-md-9">15天4小时</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3 info-label">描述</div>
+                            <div class="col-md-9">负责核心区服务器与网络设备的指标采集</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 状态与资源卡片 -->
+            <div class="col-md-5">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0"><i class="bi bi-activity me-2"></i> 状态监控</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>CPU 使用率</span>
+                                <span>35%</span>
+                            </div>
+                            <div class="resource-chart">
+                                <div class="usage" style="width: 35%"></div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>内存使用率</span>
+                                <span>42%</span>
+                            </div>
+                            <div class="resource-chart">
+                                <div class="usage" style="width: 42%"></div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>任务负载</span>
+                                <span>12/50</span>
+                            </div>
+                            <div class="resource-chart">
+                                <div class="usage" style="width: 24%"></div>
+                            </div>
+                        </div>
+
+                        <div class="small-stats">
+                            <div class="small-stat-item">
+                                <div class="h5 mb-0">99.8%</div>
+                                <div class="small text-muted">采集成功率</div>
+                            </div>
+                            <div class="small-stat-item">
+                                <div class="h5 mb-0">43ms</div>
+                                <div class="small text-muted">平均响应时间</div>
+                            </div>
+                            <div class="small-stat-item">
+                                <div class="h5 mb-0">15</div>
+                                <div class="small text-muted">关联设备数</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 采集能力卡片 - 此处仅为预览状态，实际需要通过选项卡切换显示 -->
+        <div class="card mb-4" style="display: none;">
+            <div class="card-header">
+                <h5 class="card-title mb-0"><i class="bi bi-lightning me-2"></i> 采集能力</h5>
+            </div>
+            <div class="card-body">
+                <h6 class="mb-3">支持的协议</h6>
+                <div class="mb-4">
+                    <span class="badge bg-primary me-2">SNMP v2/v3</span>
+                    <span class="badge bg-primary me-2">JMX</span>
+                    <span class="badge bg-primary me-2">HTTP/API</span>
+                    <span class="badge bg-secondary me-2">SSH</span>
+                </div>
+
+                <h6 class="mb-3">支持的指标类型</h6>
+                <div class="mb-4">
+                    <span class="metrics-tag">系统性能</span>
+                    <span class="metrics-tag">网络指标</span>
+                    <span class="metrics-tag">存储指标</span>
+                    <span class="metrics-tag">中间件性能</span>
+                    <span class="metrics-tag">数据库指标</span>
+                    <span class="metrics-tag">应用指标</span>
+                    <span class="metrics-tag">日志分析</span>
+                    <span class="metrics-tag">自定义指标</span>
+                </div>
+
+                <h6 class="mb-3">适用设备类型</h6>
+                <div class="mb-4">
+                    <span class="metrics-tag">服务器</span>
+                    <span class="metrics-tag">网络设备</span>
+                    <span class="metrics-tag">存储设备</span>
+                    <span class="metrics-tag">中间件服务器</span>
+                    <span class="metrics-tag">数据库服务器</span>
+                    <span class="metrics-tag">Web服务器</span>
+                    <span class="metrics-tag">应用服务器</span>
+                    <span class="metrics-tag">监控探针</span>
+                </div>
+
+                <h6 class="mb-3">指标采集矩阵</h6>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>指标类型</th>
+                                <th>采集协议</th>
+                                <th>适用设备</th>
+                                <th>性能评级</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>系统性能</td>
+                                <td>SNMP, SSH</td>
+                                <td>服务器</td>
+                                <td>
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                    <i class="bi bi-star text-warning"></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>网络指标</td>
+                                <td>SNMP</td>
+                                <td>网络设备</td>
+                                <td>
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>中间件性能</td>
+                                <td>JMX</td>
+                                <td>中间件服务器</td>
+                                <td>
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                    <i class="bi bi-star text-warning"></i>
+                                    <i class="bi bi-star text-warning"></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>应用指标</td>
+                                <td>HTTP/API</td>
+                                <td>应用服务器</td>
+                                <td>
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                    <i class="bi bi-star text-warning"></i>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

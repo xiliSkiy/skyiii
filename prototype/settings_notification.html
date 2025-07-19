@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能监控系统 - 通知设置</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --sidebar-width: 250px;
+            --topbar-height: 60px;
+            --primary-color: #1e3c72;
+            --secondary-color: #2a5298;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            background-color: #f5f7fb;
+        }
+        
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--primary-color), var(--secondary-color));
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            z-index: 1000;
+            transition: all 0.3s;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            color: white;
+        }
+        
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 20px;
+            min-height: 100vh;
+            transition: all 0.3s;
+        }
+        
+        .topbar {
+            height: var(--topbar-height);
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: var(--sidebar-width);
+            z-index: 999;
+            transition: all 0.3s;
+        }
+        
+        .content-area {
+            margin-top: calc(var(--topbar-height) + 20px);
+            padding-bottom: 20px;
+        }
+        
+        .logo {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 20px;
+            font-weight: bold;
+            height: var(--topbar-height);
+            display: flex;
+            align-items: center;
+        }
+        
+        .menu-item {
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+        }
+        
+        .menu-item:hover, .menu-item.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-left: 4px solid white;
+        }
+        
+        .menu-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+        
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 15px 20px;
+            font-weight: 600;
+        }
+        
+        .nav-tabs .nav-link {
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: #495057;
+        }
+        
+        .nav-tabs .nav-link.active {
+            border-bottom-color: var(--primary-color);
+            color: var(--primary-color);
+            background-color: transparent;
+            font-weight: 600;
+        }
+        
+        .nav-tabs .nav-link:hover {
+            border-bottom-color: #ddd;
+        }
+        
+        .notification-status {
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .status-normal {
+            background-color: rgba(40, 167, 69, 0.1);
+            border: 1px solid rgba(40, 167, 69, 0.2);
+        }
+        
+        .status-warning {
+            background-color: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.2);
+        }
+        
+        .notification-card {
+            border: 1px solid #f0f0f0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: box-shadow 0.3s;
+        }
+        
+        .notification-card:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .notification-title {
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .notification-badge {
+            font-size: 12px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+        
+        .badge-enabled {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+        
+        .badge-disabled {
+            background-color: rgba(108, 117, 125, 0.1);
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <!-- 侧边导航栏 -->
+    <div class="sidebar">
+        <div class="logo">
+            <i class="fas fa-shield-alt me-2"></i> SkyEye 智能监控
+        </div>
+        <div class="menu-items mt-4">
+            <a href="dashboard.html" class="menu-item">
+                <i class="fas fa-tachometer-alt"></i> 控制台
+            </a>
+            <a href="monitoring.html" class="menu-item">
+                <i class="fas fa-video"></i> 监控管理
+            </a>
+            <a href="alerts.html" class="menu-item">
+                <i class="fas fa-bell"></i> 报警中心
+            </a>
+            <a href="analytics.html" class="menu-item">
+                <i class="fas fa-chart-line"></i> 数据分析
+            </a>
+            <a href="devices.html" class="menu-item">
+                <i class="fas fa-cog"></i> 设备管理
+            </a>
+            <a href="users.html" class="menu-item">
+                <i class="fas fa-user-shield"></i> 用户管理
+            </a>
+            <a href="history.html" class="menu-item">
+                <i class="fas fa-history"></i> 历史记录
+            </a>
+            <a href="settings.html" class="menu-item active">
+                <i class="fas fa-sliders-h"></i> 系统设置
+            </a>
+        </div>
+    </div>
+
+    <!-- 顶部导航栏 -->
+    <div class="topbar">
+        <button type="button" class="btn btn-sm d-md-none" id="sidebarCollapse">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <div class="d-flex align-items-center ms-auto">
+            <div class="input-group search-box">
+                <input type="text" class="form-control form-control-sm" placeholder="搜索...">
+                <button class="btn btn-sm btn-outline-secondary" type="button">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+            
+            <button type="button" class="btn btn-sm position-relative ms-2">
+                <i class="far fa-bell"></i>
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    5
+                </span>
+            </button>
+            
+            <div class="dropdown ms-3">
+                <a class="dropdown-toggle d-flex align-items-center text-decoration-none" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <div class="rounded-circle bg-light d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                        <i class="fas fa-user text-secondary"></i>
+                    </div>
+                    <div class="ms-2 d-none d-sm-block">
+                        <div class="small fw-bold">管理员</div>
+                        <div class="small text-muted">系统管理员</div>
+                    </div>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-user-circle me-2"></i> 个人信息</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i> 账号设置</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt me-2"></i> 退出登录</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主内容区 -->
+    <div class="main-content">
+        <div class="content-area">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h4>通知设置</h4>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a href="settings.html">系统设置</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">通知设置</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div>
+                    <button class="btn btn-primary btn-sm">
+                        <i class="fas fa-save me-1"></i> 保存配置
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 通知状态概览 -->
+            <div class="notification-status status-normal mb-4">
+                <div class="d-flex align-items-center">
+                    <div class="me-3">
+                        <i class="fas fa-bell text-success fa-2x"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-1">通知系统运行正常</h5>
+                        <p class="mb-0 text-muted">所有通知渠道配置正确，消息发送正常</p>
+                    </div>
+                    <div class="ms-auto">
+                        <button class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-sync-alt me-1"></i> 刷新状态
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 通知设置页面导航标签 -->
+            <ul class="nav nav-tabs mb-4">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#" id="channels-tab">通知渠道</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="templates-tab">消息模板</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="rules-tab">通知规则</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="schedule-tab">通知计划</a>
+                </li>
+            </ul>
+            
+            <!-- 通知设置主体 -->
+            <div class="row">
+                <div class="col-md-8">
+                    <!-- 通知渠道 -->
+                    <div class="card mb-4">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <span><i class="fas fa-bell me-2"></i> 通知渠道</span>
+                            <button class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-plus me-1"></i> 添加渠道
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <!-- 通知渠道项 1 -->
+                            <div class="notification-card">
+                                <div class="notification-header">
+                                    <div class="notification-title">邮件通知</div>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="emailChannel" checked>
+                                    </div>
+                                </div>
+                                <div class="mb-2">
+                                    <span class="notification-badge badge-enabled me-2">已启用</span>
+                                    <span class="badge bg-success">正常</span>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">SMTP 服务器</label>
+                                    <input type="text" class="form-control mb-2" value="smtp.example.com">
+                                    <label class="form-label">发件人邮箱</label>
+                                    <input type="email" class="form-control mb-2" value="notifications@example.com">
+                                    <label class="form-label">收件人列表</label>
+                                    <textarea class="form-control" rows="2">admin@example.com
+support@example.com</textarea>
+                                </div>
+                                <div class="d-flex">
+                                    <button class="btn btn-sm btn-outline-primary me-2">
+                                        <i class="fas fa-edit me-1"></i> 编辑
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary me-2">
+                                        <i class="fas fa-sync me-1"></i> 测试
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-info">
+                                        <i class="fas fa-info-circle me-1"></i> 详情
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- 通知渠道项 2 -->
+                            <div class="notification-card">
+                                <div class="notification-header">
+                                    <div class="notification-title">短信通知</div>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="smsChannel" checked>
+                                    </div>
+                                </div>
+                                <div class="mb-2">
+                                    <span class="notification-badge badge-enabled me-2">已启用</span>
+                                    <span class="badge bg-success">正常</span>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">短信服务商</label>
+                                    <select class="form-select mb-2">
+                                        <option>阿里云</option>
+                                        <option>腾讯云</option>
+                                        <option>华为云</option>
+                                    </select>
+                                    <label class="form-label">API 密钥</label>
+                                    <input type="password" class="form-control mb-2" value="********">
+                                    <label class="form-label">接收号码</label>
+                                    <textarea class="form-control" rows="2">13800138000
+13900139000</textarea>
+                                </div>
+                                <div class="d-flex">
+                                    <button class="btn btn-sm btn-outline-primary me-2">
+                                        <i class="fas fa-edit me-1"></i> 编辑
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary me-2">
+                                        <i class="fas fa-sync me-1"></i> 测试
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-info">
+                                        <i class="fas fa-info-circle me-1"></i> 详情
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 消息模板 -->
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-envelope me-2"></i> 消息模板
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">模板类型</label>
+                                        <select class="form-select mb-3">
+                                            <option>告警通知</option>
+                                            <option>系统通知</option>
+                                            <option>状态报告</option>
+                                        </select>
+                                        <div class="mb-3">
+                                            <label class="form-label">模板标题</label>
+                                            <input type="text" class="form-control" value="系统告警通知">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">模板内容</label>
+                                            <textarea class="form-control" rows="6">尊敬的{user}：
+
+系统检测到{device}发生{event}告警。
+
+告警时间：{time}
+告警级别：{level}
+告警详情：{details}
+
+请及时处理。
+
+此致
+系统管理员</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">变量说明</label>
+                                        <div class="alert alert-info">
+                                            <ul class="mb-0">
+                                                <li>{user} - 接收者姓名</li>
+                                                <li>{device} - 设备名称</li>
+                                                <li>{event} - 告警事件</li>
+                                                <li>{time} - 告警时间</li>
+                                                <li>{level} - 告警级别</li>
+                                                <li>{details} - 告警详情</li>
+                                            </ul>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">适用渠道</label>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="templateEmail" checked>
+                                                <label class="form-check-label" for="templateEmail">
+                                                    邮件
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="templateSMS" checked>
+                                                <label class="form-check-label" for="templateSMS">
+                                                    短信
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-primary">
+                                    <i class="fas fa-save me-1"></i> 保存模板
+                                </button>
+                                <button class="btn btn-outline-primary">
+                                    <i class="fas fa-eye me-1"></i> 预览
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <!-- 通知概览卡片 -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-chart-pie me-2"></i> 通知概览
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>今日通知</div>
+                                <div class="fw-bold">128</div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>邮件通知</div>
+                                <div>98</div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>短信通知</div>
+                                <div>30</div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>成功率</div>
+                                <div>99.8%</div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>活跃渠道</div>
+                                <div>2</div>
+                            </div>
+                            <hr>
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-outline-primary">
+                                    <i class="fas fa-sync me-1"></i> 刷新状态
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 通知规则卡片 -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-cog me-2"></i> 通知规则
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label">规则类型</label>
+                                <select class="form-select mb-3">
+                                    <option>告警级别</option>
+                                    <option>设备类型</option>
+                                    <option>时间范围</option>
+                                </select>
+                                <div class="mb-3">
+                                    <label class="form-label">通知方式</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="ruleEmail" checked>
+                                        <label class="form-check-label" for="ruleEmail">
+                                            邮件通知
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="ruleSMS" checked>
+                                        <label class="form-check-label" for="ruleSMS">
+                                            短信通知
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="alert alert-info">
+                                <h6 class="alert-heading">规则说明</h6>
+                                <ul class="mb-0">
+                                    <li>可设置不同级别的告警通知方式</li>
+                                    <li>支持按设备类型分组通知</li>
+                                    <li>可设置通知时间范围</li>
+                                </ul>
+                            </div>
+                            <div class="d-grid">
+                                <button class="btn btn-outline-primary">
+                                    <i class="fas fa-plus me-1"></i> 添加规则
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 通知计划卡片 -->
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-calendar-alt me-2"></i> 通知计划
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label">计划类型</label>
+                                <select class="form-select mb-3">
+                                    <option>每日报告</option>
+                                    <option>每周报告</option>
+                                    <option>每月报告</option>
+                                </select>
+                                <div class="mb-3">
+                                    <label class="form-label">执行时间</label>
+                                    <input type="time" class="form-control mb-2" value="08:00">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="scheduleEnabled" checked>
+                                        <label class="form-check-label" for="scheduleEnabled">
+                                            启用计划
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-grid">
+                                <button class="btn btn-outline-primary">
+                                    <i class="fas fa-save me-1"></i> 保存计划
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

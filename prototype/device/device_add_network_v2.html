@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyEye - 添加设备 - 网络设置</title>
+    <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../assets/css/fontawesome.min.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <style>
+        .wizard-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+        .wizard-step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+        .wizard-step:not(:last-child):after {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            width: 100%;
+            height: 2px;
+            background-color: #e9ecef;
+            z-index: 1;
+        }
+        .wizard-step.completed:not(:last-child):after,
+        .wizard-step.active:not(:last-child):after {
+            background-color: #007bff;
+        }
+        .wizard-step-icon {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            color: #6c757d;
+            line-height: 24px;
+            font-size: 12px;
+            position: relative;
+            z-index: 2;
+            margin-bottom: 5px;
+        }
+        .wizard-step.active .wizard-step-icon {
+            background-color: #007bff;
+            color: #fff;
+        }
+        .wizard-step.completed .wizard-step-icon {
+            background-color: #28a745;
+            color: #fff;
+        }
+        .wizard-step-text {
+            font-size: 14px;
+            color: #6c757d;
+        }
+        .wizard-step.active .wizard-step-text {
+            color: #007bff;
+            font-weight: 600;
+        }
+        .wizard-step.completed .wizard-step-text {
+            color: #28a745;
+            font-weight: 600;
+        }
+        .form-section {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        .form-section:last-child {
+            border-bottom: none;
+        }
+        .form-section-title {
+            margin-bottom: 15px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .protocol-config {
+            display: none;
+        }
+        .test-result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        .test-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .test-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 左侧导航 -->
+        <div class="sidebar">
+            <div class="logo">
+                <img src="../assets/images/logo.png" alt="SkyEye Logo">
+                <h2>SkyEye</h2>
+            </div>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="../dashboard.html"><i class="fas fa-tachometer-alt"></i> 控制台</a></li>
+                    
+                    <!-- 设备管理菜单（展开） -->
+                    <li class="active">
+                        <a href="#deviceSubMenu" data-toggle="collapse" aria-expanded="true">
+                            <i class="fas fa-server"></i> 设备管理
+                            <i class="fas fa-angle-down"></i>
+                        </a>
+                        <ul class="collapse show" id="deviceSubMenu">
+                            <li><a href="devices_v2.html">设备列表</a></li>
+                            <li class="active"><a href="device_add_v2.html">添加设备</a></li>
+                            <li><a href="device_types.html">设备类型管理</a></li>
+                            <li><a href="device_areas.html">区域管理</a></li>
+                            <li><a href="device_groups.html">设备分组</a></li>
+                            <li><a href="device_tags.html">标签管理</a></li>
+                            <li><a href="device_templates.html">设备模板</a></li>
+                            <li><a href="device_protocols.html">设备协议</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li><a href="../monitoring.html"><i class="fas fa-video"></i> 监控管理</a></li>
+                    <li><a href="../alerts.html"><i class="fas fa-bell"></i> 报警中心</a></li>
+                    <li><a href="../task_scheduling.html"><i class="fas fa-tasks"></i> 任务调度</a></li>
+                    <li><a href="../analytics.html"><i class="fas fa-chart-line"></i> 数据分析</a></li>
+                    <li><a href="../settings.html"><i class="fas fa-cog"></i> 系统设置</a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <!-- 顶部导航 -->
+            <header class="top-bar">
+                <div class="search-container">
+                    <input type="text" placeholder="搜索...">
+                    <i class="fas fa-search"></i>
+                </div>
+                <div class="top-bar-right">
+                    <div class="notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge">3</span>
+                    </div>
+                    <div class="user-profile">
+                        <img src="../assets/images/user-avatar.png" alt="用户头像">
+                        <span>管理员</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- 内容区域 -->
+            <div class="content">
+                <div class="content-header">
+                    <h2>添加设备</h2>
+                    <div class="actions">
+                        <button class="btn btn-secondary" onclick="location.href='devices_v2.html'">
+                            <i class="fas fa-arrow-left"></i> 返回设备列表
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 步骤条 -->
+                <div class="wizard-steps">
+                    <div class="wizard-step completed">
+                        <div class="wizard-step-icon"><i class="fas fa-check"></i></div>
+                        <div class="wizard-step-text">基本信息</div>
+                    </div>
+                    <div class="wizard-step active">
+                        <div class="wizard-step-icon">2</div>
+                        <div class="wizard-step-text">网络设置</div>
+                    </div>
+                    <div class="wizard-step">
+                        <div class="wizard-step-icon">3</div>
+                        <div class="wizard-step-text">高级配置</div>
+                    </div>
+                    <div class="wizard-step">
+                        <div class="wizard-step-icon">4</div>
+                        <div class="wizard-step-text">确认信息</div>
+                    </div>
+                </div>
+
+                <!-- 添加设备表单 -->
+                <div class="card">
+                    <div class="card-body">
+                        <!-- 网络基本配置 -->
+                        <div class="form-section">
+                            <div class="form-section-title">
+                                <i class="fas fa-network-wired"></i> 网络基本配置
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="ipAddress">IP地址 <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="ipAddress" placeholder="请输入设备IP地址" value="192.168.1.100" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="port">端口号 <span class="text-danger">*</span></label>
+                                        <input type="number" class="form-control" id="port" placeholder="请输入端口号" value="554" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="macAddress">MAC地址</label>
+                                        <input type="text" class="form-control" id="macAddress" placeholder="请输入MAC地址">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="networkType">网络类型</label>
+                                        <select class="form-control" id="networkType">
+                                            <option value="wired">有线网络</option>
+                                            <option value="wireless">无线网络</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="subnet">子网掩码</label>
+                                        <input type="text" class="form-control" id="subnet" placeholder="例如: 255.255.255.0">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="gateway">默认网关</label>
+                                        <input type="text" class="form-control" id="gateway" placeholder="例如: 192.168.1.1">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 连接协议 -->
+                        <div class="form-section">
+                            <div class="form-section-title">
+                                <i class="fas fa-exchange-alt"></i> 连接协议
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="protocolSelect">选择协议 <span class="text-danger">*</span></label>
+                                        <select class="form-control" id="protocolSelect" onchange="protocolChanged()">
+                                            <option value="">请选择连接协议</option>
+                                            <option value="rtsp" selected>RTSP (实时流协议)</option>
+                                            <option value="onvif">ONVIF (开放网络视频接口)</option>
+                                            <option value="http">HTTP (超文本传输协议)</option>
+                                            <option value="modbus">MODBUS (工业通信协议)</option>
+                                            <option value="mqtt">MQTT (消息队列遥测传输协议)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- RTSP 协议配置 -->
+                            <div id="rtspConfig" class="protocol-config" style="display: block;">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <h6 class="mb-3">RTSP协议配置</h6>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="rtspUrl">RTSP地址</label>
+                                            <input type="text" class="form-control" id="rtspUrl" placeholder="例如: rtsp://username:password@ip:port/stream" value="rtsp://admin:admin123@192.168.1.100:554/stream">
+                                            <small class="form-text text-muted">可留空，将根据用户名密码自动生成</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="rtspTransport">传输模式</label>
+                                            <select class="form-control" id="rtspTransport">
+                                                <option value="tcp">TCP</option>
+                                                <option value="udp">UDP</option>
+                                                <option value="http">HTTP</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="rtspStreamType">流类型</label>
+                                            <select class="form-control" id="rtspStreamType">
+                                                <option value="main">主码流</option>
+                                                <option value="sub">子码流</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="rtspTimeout">超时时间(秒)</label>
+                                            <input type="number" class="form-control" id="rtspTimeout" value="60">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ONVIF 协议配置 -->
+                            <div id="onvifConfig" class="protocol-config">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <h6 class="mb-3">ONVIF协议配置</h6>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="onvifPort">ONVIF端口</label>
+                                            <input type="number" class="form-control" id="onvifPort" placeholder="端口号" value="8000">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="onvifProfile">ONVIF配置文件</label>
+                                            <select class="form-control" id="onvifProfile">
+                                                <option value="profile0">默认配置</option>
+                                                <option value="profile1">高清配置</option>
+                                                <option value="profile2">标清配置</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>支持PTZ</label>
+                                            <div>
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" name="ptzSupport" id="ptzYes" value="yes">
+                                                    <label class="form-check-label" for="ptzYes">是</label>
+                                                </div>
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" name="ptzSupport" id="ptzNo" value="no" checked>
+                                                    <label class="form-check-label" for="ptzNo">否</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="onvifVersion">ONVIF版本</label>
+                                            <select class="form-control" id="onvifVersion">
+                                                <option value="2.0">2.0</option>
+                                                <option value="2.1">2.1</option>
+                                                <option value="2.2">2.2</option>
+                                                <option value="17.06">17.06</option>
+                                                <option value="19.06">19.06</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- MODBUS 协议配置 -->
+                            <div id="modbusConfig" class="protocol-config">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <h6 class="mb-3">MODBUS协议配置</h6>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="modbusMode">MODBUS模式</label>
+                                            <select class="form-control" id="modbusMode">
+                                                <option value="tcp">Modbus TCP</option>
+                                                <option value="rtu">Modbus RTU</option>
+                                                <option value="ascii">Modbus ASCII</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="modbusAddress">从站地址</label>
+                                            <input type="number" class="form-control" id="modbusAddress" value="1">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="modbusByteOrder">字节序</label>
+                                            <select class="form-control" id="modbusByteOrder">
+                                                <option value="big">大端序(Big Endian)</option>
+                                                <option value="little">小端序(Little Endian)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="modbusTimeout">超时时间(ms)</label>
+                                            <input type="number" class="form-control" id="modbusTimeout" value="1000">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- MQTT 协议配置 -->
+                            <div id="mqttConfig" class="protocol-config">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <h6 class="mb-3">MQTT协议配置</h6>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="mqttBroker">MQTT Broker</label>
+                                            <input type="text" class="form-control" id="mqttBroker" placeholder="例如: mqtt://broker.example.com">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="mqttPort">MQTT端口</label>
+                                            <input type="number" class="form-control" id="mqttPort" value="1883">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="mqttTopic">MQTT主题</label>
+                                            <input type="text" class="form-control" id="mqttTopic" placeholder="例如: device/data">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="mqttQos">服务质量(QoS)</label>
+                                            <select class="form-control" id="mqttQos">
+                                                <option value="0">0 - 最多一次</option>
+                                                <option value="1">1 - 至少一次</option>
+                                                <option value="2">2 - 恰好一次</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- HTTP 协议配置 -->
+                            <div id="httpConfig" class="protocol-config">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <h6 class="mb-3">HTTP协议配置</h6>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="httpUrl">HTTP地址</label>
+                                            <input type="text" class="form-control" id="httpUrl" placeholder="例如: http://192.168.1.100/api">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="httpMethod">请求方法</label>
+                                            <select class="form-control" id="httpMethod">
+                                                <option value="GET">GET</option>
+                                                <option value="POST">POST</option>
+                                                <option value="PUT">PUT</option>
+                                                <option value="DELETE">DELETE</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="httpContentType">内容类型</label>
+                                            <select class="form-control" id="httpContentType">
+                                                <option value="application/json">application/json</option>
+                                                <option value="application/xml">application/xml</option>
+                                                <option value="text/plain">text/plain</option>
+                                                <option value="application/x-www-form-urlencoded">application/x-www-form-urlencoded</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="httpTimeout">超时时间(ms)</label>
+                                            <input type="number" class="form-control" id="httpTimeout" value="3000">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-3">
+                                <button type="button" class="btn btn-primary" onclick="testConnection()">
+                                    <i class="fas fa-plug"></i> 测试连接
+                                </button>
+                                <div id="testResult" class="test-result test-success">
+                                    <i class="fas fa-check-circle"></i> 连接成功！设备可正常通信。
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 认证信息 -->
+                        <div class="form-section">
+                            <div class="form-section-title">
+                                <i class="fas fa-key"></i> 认证信息
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="username">用户名</label>
+                                        <input type="text" class="form-control" id="username" placeholder="请输入设备用户名" value="admin">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="password">密码</label>
+                                        <div class="input-group">
+                                            <input type="password" class="form-control" id="password" placeholder="请输入设备密码" value="admin123">
+                                            <div class="input-group-append">
+                                                <button class="btn btn-outline-secondary" type="button" onclick="togglePassword()">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="authType">认证方式</label>
+                                        <select class="form-control" id="authType">
+                                            <option value="basic">Basic认证</option>
+                                            <option value="digest">Digest认证</option>
+                                            <option value="token">Token认证</option>
+                                            <option value="none">无认证</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="tokenValue">Token值</label>
+                                        <input type="text" class="form-control" id="tokenValue" placeholder="仅Token认证时需要填写">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 操作按钮 -->
+                        <div class="form-actions text-right">
+                            <button type="button" class="btn btn-secondary" onclick="location.href='device_add_v2.html'">上一步</button>
+                            <button type="button" class="btn btn-primary" onclick="location.href='device_add_advanced_v2.html'">下一步</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../assets/js/jquery.min.js"></script>
+    <script src="../assets/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/scripts.js"></script>
+    <script>
+        function protocolChanged() {
+            var protocol = $('#protocolSelect').val();
+            
+            // 隐藏所有协议配置
+            $('.protocol-config').hide();
+            
+            // 显示选中的协议配置
+            if (protocol) {
+                $('#' + protocol + 'Config').show();
+            }
+        }
+        
+        function togglePassword() {
+            var passwordField = document.getElementById('password');
+            var icon = document.querySelector('.input-group-append button i');
+            
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordField.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+        
+        function testConnection() {
+            // 模拟连接测试
+            var testResult = document.getElementById('testResult');
+            testResult.style.display = 'block';
+            
+            // 获取IP地址和端口
+            var ip = document.getElementById('ipAddress').value;
+            var port = document.getElementById('port').value;
+            
+            // 简单验证（实际环境会调用API进行真正的连接测试）
+            if (ip && port) {
+                testResult.className = 'test-result test-success';
+                testResult.innerHTML = '<i class="fas fa-check-circle"></i> 连接成功！设备可正常通信。';
+            } else {
+                testResult.className = 'test-result test-error';
+                testResult.innerHTML = '<i class="fas fa-times-circle"></i> 连接失败，请检查网络配置。';
+            }
+        }
+    </script>
+</body>
+</html> 

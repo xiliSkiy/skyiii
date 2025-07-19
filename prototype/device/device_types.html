@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyEye - 设备类型管理</title>
+    <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../assets/css/fontawesome.min.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <style>
+        .tree-table .tree-branch {
+            margin-left: 20px;
+        }
+        .tree-table .tree-icon {
+            margin-right: 5px;
+        }
+        .tree-table .tree-toggle {
+            cursor: pointer;
+            width: 20px;
+            display: inline-block;
+            text-align: center;
+        }
+        .protocol-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            margin-right: 5px;
+            margin-bottom: 5px;
+            border-radius: 3px;
+            font-size: 12px;
+            background-color: #e9ecef;
+            color: #495057;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 左侧导航 -->
+        <div class="sidebar">
+            <div class="logo">
+                <img src="../assets/images/logo.png" alt="SkyEye Logo">
+                <h2>SkyEye</h2>
+            </div>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="../dashboard.html"><i class="fas fa-tachometer-alt"></i> 控制台</a></li>
+                    
+                    <!-- 设备管理菜单（展开） -->
+                    <li class="active">
+                        <a href="#deviceSubMenu" data-toggle="collapse" aria-expanded="true">
+                            <i class="fas fa-server"></i> 设备管理
+                            <i class="fas fa-angle-down"></i>
+                        </a>
+                        <ul class="collapse show" id="deviceSubMenu">
+                            <li><a href="devices_v2.html">设备列表</a></li>
+                            <li><a href="device_add_v2.html">添加设备</a></li>
+                            <li class="active"><a href="device_types.html">设备类型管理</a></li>
+                            <li><a href="device_areas.html">区域管理</a></li>
+                            <li><a href="device_groups.html">设备分组</a></li>
+                            <li><a href="device_tags.html">标签管理</a></li>
+                            <li><a href="device_templates.html">设备模板</a></li>
+                            <li><a href="device_protocols.html">设备协议</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li><a href="../monitoring.html"><i class="fas fa-video"></i> 监控管理</a></li>
+                    <li><a href="../alerts.html"><i class="fas fa-bell"></i> 报警中心</a></li>
+                    <li><a href="../task_scheduling.html"><i class="fas fa-tasks"></i> 任务调度</a></li>
+                    <li><a href="../analytics.html"><i class="fas fa-chart-line"></i> 数据分析</a></li>
+                    <li><a href="../settings.html"><i class="fas fa-cog"></i> 系统设置</a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <!-- 顶部导航 -->
+            <header class="top-bar">
+                <div class="search-container">
+                    <input type="text" placeholder="搜索...">
+                    <i class="fas fa-search"></i>
+                </div>
+                <div class="top-bar-right">
+                    <div class="notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge">3</span>
+                    </div>
+                    <div class="user-profile">
+                        <img src="../assets/images/user-avatar.png" alt="用户头像">
+                        <span>管理员</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- 内容区域 -->
+            <div class="content">
+                <div class="content-header">
+                    <h2>设备类型管理</h2>
+                    <div class="actions">
+                        <button class="btn btn-primary" data-toggle="modal" data-target="#addTypeModal">
+                            <i class="fas fa-plus"></i> 添加类型
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 搜索及筛选 -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">搜索类型</span>
+                                    </div>
+                                    <input type="text" class="form-control" placeholder="请输入类型名称或编码">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-primary" type="button">
+                                            <i class="fas fa-search"></i> 搜索
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-right">
+                                <button class="btn btn-outline-secondary">
+                                    <i class="fas fa-download"></i> 导出
+                                </button>
+                                <button class="btn btn-outline-secondary">
+                                    <i class="fas fa-upload"></i> 导入
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 设备类型树形表格 -->
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped tree-table">
+                                <thead>
+                                    <tr>
+                                        <th>类型名称</th>
+                                        <th>类型编码</th>
+                                        <th>设备数量</th>
+                                        <th>支持协议</th>
+                                        <th>排序</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- 摄像头分类 -->
+                                    <tr>
+                                        <td>
+                                            <span class="tree-toggle" onclick="toggleTreeItem(this)">
+                                                <i class="fas fa-caret-down"></i>
+                                            </span>
+                                            <i class="fas fa-video tree-icon"></i> 摄像头
+                                        </td>
+                                        <td>CAMERA</td>
+                                        <td>50</td>
+                                        <td>
+                                            <span class="protocol-badge">RTSP</span>
+                                            <span class="protocol-badge">ONVIF</span>
+                                            <span class="protocol-badge">HTTP</span>
+                                        </td>
+                                        <td>1</td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <button type="button" class="btn btn-info" title="查看">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-primary" title="编辑">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-success" title="添加子类型">
+                                                    <i class="fas fa-plus"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-danger" title="删除">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="tree-branch">
+                                            <span class="tree-toggle" onclick="toggleTreeItem(this)">
+                                                <i class="fas fa-caret-down"></i>
+                                            </span>
+                                            <i class="fas fa-video tree-icon"></i> 网络摄像头
+                                        </td>
+                                        <td>CAMERA_NETWORK</td>
+                                        <td>30</td>
+                                        <td>
+                                            <span class="protocol-badge">RTSP</span>
+                                            <span class="protocol-badge">ONVIF</span>
+                                            <span class="protocol-badge">HTTP</span>
+                                        </td>
+                                        <td>1</td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <button type="button" class="btn btn-info" title="查看">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-primary" title="编辑">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-success" title="添加子类型">
+                                                    <i class="fas fa-plus"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-danger" title="删除">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="tree-branch tree-branch">
+                                            <span class="tree-toggle" style="visibility: hidden;">
+                                                <i class="fas fa-caret-right"></i>
+                                            </span>
+                                            <i class="fas fa-video tree-icon"></i> 半球摄像头
+                                        </td>
+                                        <td>CAMERA_NETWORK_DOME</td>
+                                        <td>15</td>
+                                        <td>
+                                            <span class="protocol-badge">RTSP</span>
+                                            <span class="protocol-badge">ONVIF</span>
+                                        </td>
+                                        <td>1</td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <button type="button" class="btn btn-info" title="查看">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-primary" title="编辑">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-success" title="添加子类型">
+                                                    <i class="fas fa-plus"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-danger" title="删除">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="tree-branch tree-branch">
+                                            <span class="tree-toggle" style="visibility: hidden;">
+                                                <i class="fas fa-caret-right"></i>
+                                            </span>
+                                            <i class="fas fa-video tree-icon"></i> 枪机摄像头
+                                        </td>
+                                        <td>CAMERA_NETWORK_BULLET</td>
+                                        <td>15</td>
+                                        <td>
+                                            <span class="protocol-badge">RTSP</span>
+                                            <span class="protocol-badge">ONVIF</span>
+                                        </td>
+                                        <td>2</td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <button type="button" class="btn btn-info" title="查看">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-primary" title="编辑">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-success" title="添加子类型">
+                                                    <i class="fas fa-plus"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-danger" title="删除">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="tree-branch">
+                                            <span class="tree-toggle" style="visibility: hidden;">
+                                                <i class="fas fa-caret-right"></i>
+                                            </span>
+                                            <i class="fas fa-video tree-icon"></i> 模拟摄像头
+                                        </td>
+                                        <td>CAMERA_ANALOG</td>
+                                        <td>20</td>
+                                        <td>
+                                            <span class="protocol-badge">BNC</span>
+                                        </td>
+                                        <td>2</td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <button type="button" class="btn btn-info" title="查看">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-primary" title="编辑">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-success" title="添加子类型">
+                                                    <i class="fas fa-plus"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-danger" title="删除">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    <!-- 传感器分类 -->
+                                    <tr>
+                                        <td>
+                                            <span class="tree-toggle" onclick="toggleTreeItem(this)">
+                                                <i class="fas fa-caret-right"></i>
+                                            </span>
+                                            <i class="fas fa-microchip tree-icon"></i> 传感器
+                                        </td>
+                                        <td>SENSOR</td>
+                                        <td>30</td>
+                                        <td>
+                                            <span class="protocol-badge">MODBUS</span>
+                                            <span class="protocol-badge">MQTT</span>
+                                            <span class="protocol-badge">HTTP</span>
+                                        </td>
+                                        <td>2</td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <button type="button" class="btn btn-info" title="查看">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-primary" title="编辑">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-success" title="添加子类型">
+                                                    <i class="fas fa-plus"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-danger" title="删除">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    <!-- 门禁分类 -->
+                                    <tr>
+                                        <td>
+                                            <span class="tree-toggle" onclick="toggleTreeItem(this)">
+                                                <i class="fas fa-caret-right"></i>
+                                            </span>
+                                            <i class="fas fa-door-open tree-icon"></i> 门禁
+                                        </td>
+                                        <td>ACCESS</td>
+                                        <td>15</td>
+                                        <td>
+                                            <span class="protocol-badge">WIEGAND</span>
+                                            <span class="protocol-badge">TCP/IP</span>
+                                            <span class="protocol-badge">RS485</span>
+                                        </td>
+                                        <td>3</td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <button type="button" class="btn btn-info" title="查看">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-primary" title="编辑">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-success" title="添加子类型">
+                                                    <i class="fas fa-plus"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-danger" title="删除">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    
+                                    <!-- 其他设备分类 -->
+                                    <tr>
+                                        <td>
+                                            <span class="tree-toggle" onclick="toggleTreeItem(this)">
+                                                <i class="fas fa-caret-right"></i>
+                                            </span>
+                                            <i class="fas fa-cogs tree-icon"></i> 其他设备
+                                        </td>
+                                        <td>OTHER</td>
+                                        <td>5</td>
+                                        <td>
+                                            <span class="protocol-badge">HTTP</span>
+                                            <span class="protocol-badge">自定义</span>
+                                        </td>
+                                        <td>4</td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <button type="button" class="btn btn-info" title="查看">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-primary" title="编辑">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-success" title="添加子类型">
+                                                    <i class="fas fa-plus"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-danger" title="删除">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加设备类型模态框 -->
+    <div class="modal fade" id="addTypeModal" tabindex="-1" role="dialog" aria-labelledby="addTypeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addTypeModalLabel">添加设备类型</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="typeName">类型名称 <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="typeName" placeholder="请输入类型名称">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="typeCode">类型编码 <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="typeCode" placeholder="请输入类型编码">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="parentType">父级类型</label>
+                                <select class="form-control" id="parentType">
+                                    <option value="">无 (顶级类型)</option>
+                                    <option value="CAMERA">摄像头</option>
+                                    <option value="CAMERA_NETWORK">网络摄像头</option>
+                                    <option value="CAMERA_ANALOG">模拟摄像头</option>
+                                    <option value="SENSOR">传感器</option>
+                                    <option value="ACCESS">门禁</option>
+                                    <option value="OTHER">其他设备</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="typeIcon">类型图标</label>
+                                <select class="form-control" id="typeIcon">
+                                    <option value="fa-video">摄像头图标</option>
+                                    <option value="fa-microchip">传感器图标</option>
+                                    <option value="fa-door-open">门禁图标</option>
+                                    <option value="fa-cogs">其他设备图标</option>
+                                    <option value="fa-server">服务器图标</option>
+                                    <option value="fa-network-wired">网络设备图标</option>
+                                    <option value="fa-thermometer-half">温度传感器图标</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="sortOrder">排序号</label>
+                                <input type="number" class="form-control" id="sortOrder" placeholder="数字越小排序越靠前">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="typeDescription">类型描述</label>
+                            <textarea class="form-control" id="typeDescription" rows="3"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>支持的协议</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="RTSP" id="protocolRTSP">
+                                <label class="form-check-label" for="protocolRTSP">
+                                    RTSP (实时流协议)
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="ONVIF" id="protocolONVIF">
+                                <label class="form-check-label" for="protocolONVIF">
+                                    ONVIF (开放网络视频接口)
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="HTTP" id="protocolHTTP">
+                                <label class="form-check-label" for="protocolHTTP">
+                                    HTTP (超文本传输协议)
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="MODBUS" id="protocolMODBUS">
+                                <label class="form-check-label" for="protocolMODBUS">
+                                    MODBUS (工业通信协议)
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="MQTT" id="protocolMQTT">
+                                <label class="form-check-label" for="protocolMQTT">
+                                    MQTT (消息队列遥测传输协议)
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>属性定义</label>
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>属性名称</th>
+                                            <th>属性编码</th>
+                                            <th>数据类型</th>
+                                            <th>是否必填</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="propertyTable">
+                                        <tr>
+                                            <td>
+                                                <input type="text" class="form-control form-control-sm" placeholder="属性名称">
+                                            </td>
+                                            <td>
+                                                <input type="text" class="form-control form-control-sm" placeholder="属性编码">
+                                            </td>
+                                            <td>
+                                                <select class="form-control form-control-sm">
+                                                    <option value="string">字符串</option>
+                                                    <option value="number">数字</option>
+                                                    <option value="boolean">布尔值</option>
+                                                    <option value="enum">枚举</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <select class="form-control form-control-sm">
+                                                    <option value="false">否</option>
+                                                    <option value="true">是</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <button type="button" class="btn btn-sm btn-danger">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-secondary" onclick="addPropertyRow()">
+                                <i class="fas fa-plus"></i> 添加属性
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../assets/js/jquery.min.js"></script>
+    <script src="../assets/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/scripts.js"></script>
+    <script>
+        function toggleTreeItem(element) {
+            var $element = $(element);
+            var isExpanded = $element.find('i').hasClass('fa-caret-down');
+            
+            if (isExpanded) {
+                $element.find('i').removeClass('fa-caret-down').addClass('fa-caret-right');
+                // 隐藏子节点
+                var $parentRow = $element.closest('tr');
+                var parentLevel = getTreeLevel($parentRow);
+                var $nextRow = $parentRow.next();
+                
+                while ($nextRow.length > 0 && getTreeLevel($nextRow) > parentLevel) {
+                    $nextRow.hide();
+                    $nextRow = $nextRow.next();
+                }
+            } else {
+                $element.find('i').removeClass('fa-caret-right').addClass('fa-caret-down');
+                // 显示直接子节点
+                var $parentRow = $element.closest('tr');
+                var parentLevel = getTreeLevel($parentRow);
+                var $nextRow = $parentRow.next();
+                
+                while ($nextRow.length > 0 && getTreeLevel($nextRow) > parentLevel) {
+                    if (getTreeLevel($nextRow) === parentLevel + 1) {
+                        $nextRow.show();
+                        // 如果子节点是折叠的，确保其子节点保持隐藏
+                        var $toggleIcon = $nextRow.find('.tree-toggle i');
+                        if ($toggleIcon.hasClass('fa-caret-right')) {
+                            var childLevel = getTreeLevel($nextRow);
+                            var $childNextRow = $nextRow.next();
+                            while ($childNextRow.length > 0 && getTreeLevel($childNextRow) > childLevel) {
+                                $childNextRow.hide();
+                                $childNextRow = $childNextRow.next();
+                            }
+                        }
+                    }
+                    $nextRow = $nextRow.next();
+                }
+            }
+        }
+        
+        function getTreeLevel(row) {
+            var $row = $(row);
+            var $cell = $row.find('td').first();
+            
+            if ($cell.hasClass('tree-branch')) {
+                var branchCount = 0;
+                var currentElement = $cell[0];
+                while (currentElement) {
+                    if (currentElement.classList.contains('tree-branch')) {
+                        branchCount++;
+                    }
+                    currentElement = currentElement.parentElement;
+                }
+                return branchCount;
+            }
+            return 0;
+        }
+        
+        function addPropertyRow() {
+            var newRow = `
+                <tr>
+                    <td>
+                        <input type="text" class="form-control form-control-sm" placeholder="属性名称">
+                    </td>
+                    <td>
+                        <input type="text" class="form-control form-control-sm" placeholder="属性编码">
+                    </td>
+                    <td>
+                        <select class="form-control form-control-sm">
+                            <option value="string">字符串</option>
+                            <option value="number">数字</option>
+                            <option value="boolean">布尔值</option>
+                            <option value="enum">枚举</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="form-control form-control-sm">
+                            <option value="false">否</option>
+                            <option value="true">是</option>
+                        </select>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-sm btn-danger" onclick="removePropertyRow(this)">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+            
+            $('#propertyTable').append(newRow);
+        }
+        
+        function removePropertyRow(button) {
+            $(button).closest('tr').remove();
+        }
+    </script>
+</body>
+</html> 

@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyEye - 区域管理</title>
+    <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../assets/css/fontawesome.min.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <style>
+        .area-card {
+            height: 100%;
+            transition: all 0.3s;
+        }
+        .area-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
+        }
+        .area-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .area-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-size: 18px;
+        }
+        .area-content {
+            margin-top: 10px;
+        }
+        .area-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+        .area-stat-item {
+            text-align: center;
+        }
+        .area-stat-value {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .area-stat-label {
+            font-size: 12px;
+            color: #6c757d;
+        }
+        .area-actions {
+            visibility: hidden;
+            opacity: 0;
+            transition: all 0.3s;
+        }
+        .area-card:hover .area-actions {
+            visibility: visible;
+            opacity: 1;
+        }
+        .area-badge {
+            font-size: 80%;
+            margin-left: 5px;
+        }
+        .tree-view {
+            padding-left: 0;
+        }
+        .tree-view ul {
+            padding-left: 20px;
+        }
+        .tree-view li {
+            list-style-type: none;
+            margin: 5px 0;
+            position: relative;
+        }
+        .tree-view li::before {
+            content: "";
+            position: absolute;
+            left: -15px;
+            top: 0;
+            width: 10px;
+            height: 1px;
+            background: #ccc;
+        }
+        .tree-view li::after {
+            content: "";
+            position: absolute;
+            left: -15px;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background: #ccc;
+        }
+        .tree-view li:last-child::after {
+            height: 10px;
+        }
+        .tree-node {
+            padding: 5px 8px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .tree-node:hover {
+            background-color: #f8f9fa;
+        }
+        .tree-node-content {
+            display: flex;
+            align-items: center;
+        }
+        .tree-icon {
+            margin-right: 5px;
+            width: 18px;
+            text-align: center;
+        }
+        .area-count {
+            font-size: 12px;
+            color: #6c757d;
+            margin-left: 8px;
+        }
+        .dropdown-menu {
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 左侧导航 -->
+        <div class="sidebar">
+            <div class="logo">
+                <img src="../assets/images/logo.png" alt="SkyEye Logo">
+                <h2>SkyEye</h2>
+            </div>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="../dashboard.html"><i class="fas fa-tachometer-alt"></i> 控制台</a></li>
+                    
+                    <!-- 设备管理菜单（展开） -->
+                    <li class="active">
+                        <a href="#deviceSubMenu" data-toggle="collapse" aria-expanded="true">
+                            <i class="fas fa-server"></i> 设备管理
+                            <i class="fas fa-angle-down"></i>
+                        </a>
+                        <ul class="collapse show" id="deviceSubMenu">
+                            <li><a href="devices_v2.html">设备列表</a></li>
+                            <li><a href="device_add_v2.html">添加设备</a></li>
+                            <li><a href="device_types.html">设备类型管理</a></li>
+                            <li class="active"><a href="device_areas.html">区域管理</a></li>
+                            <li><a href="device_groups.html">设备分组</a></li>
+                            <li><a href="device_tags.html">标签管理</a></li>
+                            <li><a href="device_templates.html">设备模板</a></li>
+                            <li><a href="device_protocols.html">设备协议</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li><a href="../monitoring.html"><i class="fas fa-video"></i> 监控管理</a></li>
+                    <li><a href="../alerts.html"><i class="fas fa-bell"></i> 报警中心</a></li>
+                    <li><a href="../task_scheduling.html"><i class="fas fa-tasks"></i> 任务调度</a></li>
+                    <li><a href="../analytics.html"><i class="fas fa-chart-line"></i> 数据分析</a></li>
+                    <li><a href="../settings.html"><i class="fas fa-cog"></i> 系统设置</a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <!-- 顶部导航 -->
+            <header class="top-bar">
+                <div class="search-container">
+                    <input type="text" placeholder="搜索...">
+                    <i class="fas fa-search"></i>
+                </div>
+                <div class="top-bar-right">
+                    <div class="notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge">3</span>
+                    </div>
+                    <div class="user-profile">
+                        <img src="../assets/images/user-avatar.png" alt="用户头像">
+                        <span>管理员</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- 内容区域 -->
+            <div class="content">
+                <div class="content-header">
+                    <h2>区域管理</h2>
+                    <div class="actions">
+                        <button class="btn btn-outline-secondary mr-2" onclick="location.href='device_area_map.html'">
+                            <i class="fas fa-map-marked-alt"></i> 区域地图
+                        </button>
+                        <button class="btn btn-primary" onclick="location.href='device_area_add.html'">
+                            <i class="fas fa-plus"></i> 添加区域
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 区域管理内容 -->
+                <div class="row">
+                    <!-- 左侧区域树 -->
+                    <div class="col-lg-3">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">区域结构</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="input-group mb-3">
+                                    <input type="text" class="form-control" placeholder="搜索区域...">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-outline-secondary" type="button">
+                                            <i class="fas fa-search"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <ul class="tree-view">
+                                    <li>
+                                        <div class="tree-node">
+                                            <div class="tree-node-content">
+                                                <span class="tree-icon"><i class="fas fa-building"></i></span>
+                                                <span>总部大楼</span>
+                                                <span class="area-count">(25)</span>
+                                            </div>
+                                            <div>
+                                                <button class="btn btn-link btn-sm p-0 text-muted">
+                                                    <i class="fas fa-chevron-down"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <ul>
+                                            <li>
+                                                <div class="tree-node">
+                                                    <div class="tree-node-content">
+                                                        <span class="tree-icon"><i class="fas fa-layer-group"></i></span>
+                                                        <span>一楼</span>
+                                                        <span class="area-count">(12)</span>
+                                                    </div>
+                                                    <div>
+                                                        <button class="btn btn-link btn-sm p-0 text-muted">
+                                                            <i class="fas fa-chevron-down"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <ul>
+                                                    <li>
+                                                        <div class="tree-node active bg-light">
+                                                            <div class="tree-node-content">
+                                                                <span class="tree-icon"><i class="fas fa-door-open"></i></span>
+                                                                <span>入口大厅</span>
+                                                                <span class="area-count">(5)</span>
+                                                            </div>
+                                                            <div>
+                                                                <div class="dropdown">
+                                                                    <button class="btn btn-link btn-sm p-0 text-muted" data-toggle="dropdown">
+                                                                        <i class="fas fa-ellipsis-v"></i>
+                                                                    </button>
+                                                                    <div class="dropdown-menu dropdown-menu-right">
+                                                                        <a class="dropdown-item" href="#"><i class="fas fa-eye"></i> 查看详情</a>
+                                                                        <a class="dropdown-item" href="#"><i class="fas fa-edit"></i> 编辑区域</a>
+                                                                        <a class="dropdown-item" href="#"><i class="fas fa-plus"></i> 添加子区域</a>
+                                                                        <div class="dropdown-divider"></div>
+                                                                        <a class="dropdown-item text-danger" href="#"><i class="fas fa-trash"></i> 删除区域</a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                    <li>
+                                                        <div class="tree-node">
+                                                            <div class="tree-node-content">
+                                                                <span class="tree-icon"><i class="fas fa-user-shield"></i></span>
+                                                                <span>前台</span>
+                                                                <span class="area-count">(3)</span>
+                                                            </div>
+                                                            <div>
+                                                                <div class="dropdown">
+                                                                    <button class="btn btn-link btn-sm p-0 text-muted" data-toggle="dropdown">
+                                                                        <i class="fas fa-ellipsis-v"></i>
+                                                                    </button>
+                                                                    <div class="dropdown-menu dropdown-menu-right">
+                                                                        <a class="dropdown-item" href="#"><i class="fas fa-eye"></i> 查看详情</a>
+                                                                        <a class="dropdown-item" href="#"><i class="fas fa-edit"></i> 编辑区域</a>
+                                                                        <a class="dropdown-item" href="#"><i class="fas fa-plus"></i> 添加子区域</a>
+                                                                        <div class="dropdown-divider"></div>
+                                                                        <a class="dropdown-item text-danger" href="#"><i class="fas fa-trash"></i> 删除区域</a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                    <li>
+                                                        <div class="tree-node">
+                                                            <div class="tree-node-content">
+                                                                <span class="tree-icon"><i class="fas fa-utensils"></i></span>
+                                                                <span>餐厅</span>
+                                                                <span class="area-count">(4)</span>
+                                                            </div>
+                                                            <div>
+                                                                <div class="dropdown">
+                                                                    <button class="btn btn-link btn-sm p-0 text-muted" data-toggle="dropdown">
+                                                                        <i class="fas fa-ellipsis-v"></i>
+                                                                    </button>
+                                                                    <div class="dropdown-menu dropdown-menu-right">
+                                                                        <a class="dropdown-item" href="#"><i class="fas fa-eye"></i> 查看详情</a>
+                                                                        <a class="dropdown-item" href="#"><i class="fas fa-edit"></i> 编辑区域</a>
+                                                                        <a class="dropdown-item" href="#"><i class="fas fa-plus"></i> 添加子区域</a>
+                                                                        <div class="dropdown-divider"></div>
+                                                                        <a class="dropdown-item text-danger" href="#"><i class="fas fa-trash"></i> 删除区域</a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <div class="tree-node">
+                                                    <div class="tree-node-content">
+                                                        <span class="tree-icon"><i class="fas fa-layer-group"></i></span>
+                                                        <span>二楼</span>
+                                                        <span class="area-count">(8)</span>
+                                                    </div>
+                                                    <div>
+                                                        <button class="btn btn-link btn-sm p-0 text-muted">
+                                                            <i class="fas fa-chevron-right"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="tree-node">
+                                                    <div class="tree-node-content">
+                                                        <span class="tree-icon"><i class="fas fa-layer-group"></i></span>
+                                                        <span>三楼</span>
+                                                        <span class="area-count">(5)</span>
+                                                    </div>
+                                                    <div>
+                                                        <button class="btn btn-link btn-sm p-0 text-muted">
+                                                            <i class="fas fa-chevron-right"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <div class="tree-node">
+                                            <div class="tree-node-content">
+                                                <span class="tree-icon"><i class="fas fa-industry"></i></span>
+                                                <span>生产园区</span>
+                                                <span class="area-count">(18)</span>
+                                            </div>
+                                            <div>
+                                                <button class="btn btn-link btn-sm p-0 text-muted">
+                                                    <i class="fas fa-chevron-right"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="tree-node">
+                                            <div class="tree-node-content">
+                                                <span class="tree-icon"><i class="fas fa-warehouse"></i></span>
+                                                <span>仓储中心</span>
+                                                <span class="area-count">(12)</span>
+                                            </div>
+                                            <div>
+                                                <button class="btn btn-link btn-sm p-0 text-muted">
+                                                    <i class="fas fa-chevron-right"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 右侧区域详情 -->
+                    <div class="col-lg-9">
+                        <!-- 顶级区域卡片 -->
+                        <div class="row mb-4">
+                            <div class="col-md-4 mb-3">
+                                <div class="card area-card">
+                                    <div class="card-body">
+                                        <div class="area-header">
+                                            <h5 class="card-title mb-0">总部大楼</h5>
+                                            <div class="area-icon bg-primary-light text-primary">
+                                                <i class="fas fa-building"></i>
+                                            </div>
+                                        </div>
+                                        <div class="area-content">
+                                            <p class="card-text text-muted">企业总部办公大楼，包含办公区、会议室、接待区等</p>
+                                            <div class="area-stats">
+                                                <div class="area-stat-item">
+                                                    <div class="area-stat-value">25</div>
+                                                    <div class="area-stat-label">设备数</div>
+                                                </div>
+                                                <div class="area-stat-item">
+                                                    <div class="area-stat-value">3</div>
+                                                    <div class="area-stat-label">子区域</div>
+                                                </div>
+                                                <div class="area-stat-item">
+                                                    <div class="area-stat-value text-success">24</div>
+                                                    <div class="area-stat-label">在线</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer bg-transparent">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <small class="text-muted">上次更新: 3分钟前</small>
+                                            <div class="area-actions">
+                                                <button class="btn btn-sm btn-link" title="编辑">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-link" title="查看设备">
+                                                    <i class="fas fa-server"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-link text-danger" title="删除">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="card area-card">
+                                    <div class="card-body">
+                                        <div class="area-header">
+                                            <h5 class="card-title mb-0">生产园区</h5>
+                                            <div class="area-icon bg-success-light text-success">
+                                                <i class="fas fa-industry"></i>
+                                            </div>
+                                        </div>
+                                        <div class="area-content">
+                                            <p class="card-text text-muted">主要生产工厂和研发中心，包含多个生产车间和仓库</p>
+                                            <div class="area-stats">
+                                                <div class="area-stat-item">
+                                                    <div class="area-stat-value">18</div>
+                                                    <div class="area-stat-label">设备数</div>
+                                                </div>
+                                                <div class="area-stat-item">
+                                                    <div class="area-stat-value">4</div>
+                                                    <div class="area-stat-label">子区域</div>
+                                                </div>
+                                                <div class="area-stat-item">
+                                                    <div class="area-stat-value text-success">16</div>
+                                                    <div class="area-stat-label">在线</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer bg-transparent">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <small class="text-muted">上次更新: 10分钟前</small>
+                                            <div class="area-actions">
+                                                <button class="btn btn-sm btn-link" title="编辑">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-link" title="查看设备">
+                                                    <i class="fas fa-server"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-link text-danger" title="删除">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="card area-card">
+                                    <div class="card-body">
+                                        <div class="area-header">
+                                            <h5 class="card-title mb-0">仓储中心</h5>
+                                            <div class="area-icon bg-warning-light text-warning">
+                                                <i class="fas fa-warehouse"></i>
+                                            </div>
+                                        </div>
+                                        <div class="area-content">
+                                            <p class="card-text text-muted">产品仓库和物流中心，负责产品存储和配送</p>
+                                            <div class="area-stats">
+                                                <div class="area-stat-item">
+                                                    <div class="area-stat-value">12</div>
+                                                    <div class="area-stat-label">设备数</div>
+                                                </div>
+                                                <div class="area-stat-item">
+                                                    <div class="area-stat-value">2</div>
+                                                    <div class="area-stat-label">子区域</div>
+                                                </div>
+                                                <div class="area-stat-item">
+                                                    <div class="area-stat-value text-warning">10</div>
+                                                    <div class="area-stat-label">在线</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer bg-transparent">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <small class="text-muted">上次更新: 25分钟前</small>
+                                            <div class="area-actions">
+                                                <button class="btn btn-sm btn-link" title="编辑">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-link" title="查看设备">
+                                                    <i class="fas fa-server"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-link text-danger" title="删除">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 当前选中区域信息 -->
+                        <div class="card mb-4">
+                            <div class="card-header d-flex justify-content-between">
+                                <h5 class="card-title mb-0">入口大厅</h5>
+                                <div>
+                                    <button class="btn btn-sm btn-outline-secondary mr-1">
+                                        <i class="fas fa-edit"></i> 编辑区域
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye"></i> 查看地图
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-4">
+                                    <div class="col-md-8">
+                                        <div class="row mb-2">
+                                            <div class="col-md-3">
+                                                <span class="font-weight-bold">区域编码:</span>
+                                            </div>
+                                            <div class="col-md-9">
+                                                AREA-HQ-F1-LOBBY
+                                            </div>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <div class="col-md-3">
+                                                <span class="font-weight-bold">上级区域:</span>
+                                            </div>
+                                            <div class="col-md-9">
+                                                总部大楼 > 一楼
+                                            </div>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <div class="col-md-3">
+                                                <span class="font-weight-bold">面积:</span>
+                                            </div>
+                                            <div class="col-md-9">
+                                                120㎡
+                                            </div>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <div class="col-md-3">
+                                                <span class="font-weight-bold">负责人:</span>
+                                            </div>
+                                            <div class="col-md-9">
+                                                张经理
+                                            </div>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <div class="col-md-3">
+                                                <span class="font-weight-bold">描述:</span>
+                                            </div>
+                                            <div class="col-md-9">
+                                                办公大楼一楼入口大厅，包含前台、等候区、门禁系统等
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="text-center mb-2">
+                                            <img src="../assets/images/area-placeholder.jpg" alt="区域平面图" class="img-fluid rounded border" style="max-height: 150px;">
+                                        </div>
+                                        <div class="text-center">
+                                            <small class="text-muted">区域平面图</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <h6 class="mb-3">区域内设备 (5)</h6>
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-hover">
+                                        <thead class="thead-light">
+                                            <tr>
+                                                <th>设备名称</th>
+                                                <th>设备类型</th>
+                                                <th>IP地址</th>
+                                                <th>状态</th>
+                                                <th>最后活动</th>
+                                                <th>操作</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>前门摄像头</td>
+                                                <td>网络摄像头</td>
+                                                <td>192.168.1.100</td>
+                                                <td><span class="badge badge-success">在线</span></td>
+                                                <td>2分钟前</td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-link p-0 mr-2">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-link p-0">
+                                                        <i class="fas fa-cog"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>大厅摄像头</td>
+                                                <td>网络摄像头</td>
+                                                <td>192.168.1.101</td>
+                                                <td><span class="badge badge-success">在线</span></td>
+                                                <td>5分钟前</td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-link p-0 mr-2">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-link p-0">
+                                                        <i class="fas fa-cog"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>前台摄像头</td>
+                                                <td>网络摄像头</td>
+                                                <td>192.168.1.102</td>
+                                                <td><span class="badge badge-success">在线</span></td>
+                                                <td>10分钟前</td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-link p-0 mr-2">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-link p-0">
+                                                        <i class="fas fa-cog"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>门禁系统</td>
+                                                <td>门禁控制器</td>
+                                                <td>192.168.1.150</td>
+                                                <td><span class="badge badge-success">在线</span></td>
+                                                <td>15分钟前</td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-link p-0 mr-2">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-link p-0">
+                                                        <i class="fas fa-cog"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>温湿度传感器</td>
+                                                <td>环境监测</td>
+                                                <td>192.168.1.200</td>
+                                                <td><span class="badge badge-warning">维护中</span></td>
+                                                <td>1小时前</td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-link p-0 mr-2">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-link p-0">
+                                                        <i class="fas fa-cog"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../assets/js/jquery.min.js"></script>
+    <script src="../assets/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/scripts.js"></script>
+</body>
+</html> 

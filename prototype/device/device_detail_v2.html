@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyEye - 设备详情</title>
+    <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../assets/css/fontawesome.min.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <style>
+        .device-info-card {
+            margin-bottom: 20px;
+        }
+        .device-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .device-icon {
+            width: 80px;
+            height: 80px;
+            background-color: #f8f9fa;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            margin-right: 20px;
+        }
+        .device-title h2 {
+            margin: 0;
+            font-size: 22px;
+        }
+        .device-title .device-id {
+            color: #6c757d;
+            font-size: 14px;
+        }
+        .device-title .device-status {
+            margin-top: 5px;
+        }
+        .info-label {
+            color: #6c757d;
+            font-weight: normal;
+        }
+        .tab-content {
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #dee2e6;
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+        }
+        .nav-tabs {
+            margin-bottom: 0;
+        }
+        #deviceMap {
+            height: 300px;
+            background-color: #f8f9fa;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 左侧导航 -->
+        <div class="sidebar">
+            <div class="logo">
+                <img src="../assets/images/logo.png" alt="SkyEye Logo">
+                <h2>SkyEye</h2>
+            </div>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="../dashboard.html"><i class="fas fa-tachometer-alt"></i> 控制台</a></li>
+                    
+                    <!-- 设备管理菜单（展开） -->
+                    <li class="active">
+                        <a href="#deviceSubMenu" data-toggle="collapse" aria-expanded="true">
+                            <i class="fas fa-server"></i> 设备管理
+                            <i class="fas fa-angle-down"></i>
+                        </a>
+                        <ul class="collapse show" id="deviceSubMenu">
+                            <li class="active"><a href="devices_v2.html">设备列表</a></li>
+                            <li><a href="device_add_v2.html">添加设备</a></li>
+                            <li><a href="device_types.html">设备类型管理</a></li>
+                            <li><a href="device_areas.html">区域管理</a></li>
+                            <li><a href="device_groups.html">设备分组</a></li>
+                            <li><a href="device_tags.html">标签管理</a></li>
+                            <li><a href="device_templates.html">设备模板</a></li>
+                            <li><a href="device_protocols.html">设备协议</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li><a href="../monitoring.html"><i class="fas fa-video"></i> 监控管理</a></li>
+                    <li><a href="../alerts.html"><i class="fas fa-bell"></i> 报警中心</a></li>
+                    <li><a href="../task_scheduling.html"><i class="fas fa-tasks"></i> 任务调度</a></li>
+                    <li><a href="../analytics.html"><i class="fas fa-chart-line"></i> 数据分析</a></li>
+                    <li><a href="../settings.html"><i class="fas fa-cog"></i> 系统设置</a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <!-- 顶部导航 -->
+            <header class="top-bar">
+                <div class="search-container">
+                    <input type="text" placeholder="搜索...">
+                    <i class="fas fa-search"></i>
+                </div>
+                <div class="top-bar-right">
+                    <div class="notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge">3</span>
+                    </div>
+                    <div class="user-profile">
+                        <img src="../assets/images/user-avatar.png" alt="用户头像">
+                        <span>管理员</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- 内容区域 -->
+            <div class="content">
+                <div class="content-header">
+                    <h2>设备详情</h2>
+                    <div class="actions">
+                        <button class="btn btn-secondary" onclick="location.href='devices_v2.html'">
+                            <i class="fas fa-arrow-left"></i> 返回
+                        </button>
+                        <button class="btn btn-primary" onclick="location.href='#'">
+                            <i class="fas fa-edit"></i> 编辑设备
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 设备头部信息 -->
+                <div class="device-header">
+                    <div class="device-icon">
+                        <i class="fas fa-video"></i>
+                    </div>
+                    <div class="device-title">
+                        <h2>前门摄像头</h2>
+                        <div class="device-id">ID: DEV20230001 | 编码: CAM-FRONT-001</div>
+                        <div class="device-status">
+                            <span class="badge badge-success">在线</span>
+                            <span class="text-muted ml-2">最后心跳: 2023-06-27 10:30:15</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 设备操作按钮 -->
+                <div class="mb-4">
+                    <button class="btn btn-success">
+                        <i class="fas fa-video"></i> 实时监控
+                    </button>
+                    <button class="btn btn-info">
+                        <i class="fas fa-sync"></i> 检测连接
+                    </button>
+                    <button class="btn btn-warning">
+                        <i class="fas fa-history"></i> 历史数据
+                    </button>
+                    <button class="btn btn-danger">
+                        <i class="fas fa-trash"></i> 删除设备
+                    </button>
+                </div>
+
+                <!-- 设备详情标签页 -->
+                <ul class="nav nav-tabs" id="deviceDetailTabs" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="basic-tab" data-toggle="tab" href="#basic" role="tab">基本信息</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="network-tab" data-toggle="tab" href="#network" role="tab">网络信息</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="location-tab" data-toggle="tab" href="#location" role="tab">位置信息</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="protocol-tab" data-toggle="tab" href="#protocol" role="tab">协议参数</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="metrics-tab" data-toggle="tab" href="#metrics" role="tab">设备指标</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="logs-tab" data-toggle="tab" href="#logs" role="tab">设备日志</a>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="deviceDetailTabsContent">
+                    <!-- 基本信息 -->
+                    <div class="tab-pane fade show active" id="basic" role="tabpanel">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card device-info-card">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-0">设备基本信息</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <table class="table table-borderless">
+                                            <tbody>
+                                                <tr>
+                                                    <td width="30%"><span class="info-label">设备名称</span></td>
+                                                    <td>前门摄像头</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><span class="info-label">设备编码</span></td>
+                                                    <td>CAM-FRONT-001</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><span class="info-label">设备类型</span></td>
+                                                    <td>网络摄像头</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><span class="info-label">设备型号</span></td>
+                                                    <td>HK-DS2CD2032-I</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><span class="info-label">描述</span></td>
+                                                    <td>前门安全监控摄像头，24小时工作</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card device-info-card">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-0">分类与标签</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <table class="table table-borderless">
+                                            <tbody>
+                                                <tr>
+                                                    <td width="30%"><span class="info-label">所属分组</span></td>
+                                                    <td>安防监控</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><span class="info-label">所属区域</span></td>
+                                                    <td>北区 > 一层</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><span class="info-label">标签</span></td>
+                                                    <td>
+                                                        <span class="badge badge-primary">重要</span>
+                                                        <span class="badge badge-info">入口</span>
+                                                        <span class="badge badge-secondary">室外</span>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td><span class="info-label">创建时间</span></td>
+                                                    <td>2023-05-15 08:30:00</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><span class="info-label">最后更新</span></td>
+                                                    <td>2023-06-25 14:22:33</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 网络信息 -->
+                    <div class="tab-pane fade" id="network" role="tabpanel">
+                        <div class="card device-info-card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">网络配置</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <table class="table table-borderless">
+                                            <tbody>
+                                                <tr>
+                                                    <td width="30%"><span class="info-label">IP地址</span></td>
+                                                    <td>192.168.1.100</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><span class="info-label">端口</span></td>
+                                                    <td>554</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><span class="info-label">MAC地址</span></td>
+                                                    <td>00:11:22:33:44:55</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><span class="info-label">连接状态</span></td>
+                                                    <td><span class="badge badge-success">已连接</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><span class="info-label">RTT</span></td>
+                                                    <td>15ms</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <table class="table table-borderless">
+                                            <tbody>
+                                                <tr>
+                                                    <td width="30%"><span class="info-label">用户名</span></td>
+                                                    <td>admin</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><span class="info-label">密码</span></td>
+                                                    <td>********</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><span class="info-label">RTSP地址</span></td>
+                                                    <td>rtsp://192.168.1.100:554/stream1</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><span class="info-label">Web访问</span></td>
+                                                    <td><a href="http://192.168.1.100" target="_blank">http://192.168.1.100</a></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><span class="info-label">最后心跳</span></td>
+                                                    <td>2023-06-27 10:30:15</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 位置信息 -->
+                    <div class="tab-pane fade" id="location" role="tabpanel">
+                        <div class="card device-info-card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">位置信息</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <table class="table table-borderless">
+                                            <tbody>
+                                                <tr>
+                                                    <td width="30%"><span class="info-label">区域</span></td>
+                                                    <td>北区</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><span class="info-label">子区域</span></td>
+                                                    <td>一层</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><span class="info-label">具体位置</span></td>
+                                                    <td>前门入口右侧</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><span class="info-label">安装高度</span></td>
+                                                    <td>2.8米</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><span class="info-label">经纬度</span></td>
+                                                    <td>116.3912, 39.9059</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div id="deviceMap">
+                                            <div class="text-center" style="padding-top: 120px;">
+                                                <i class="fas fa-map-marker-alt fa-3x text-danger"></i>
+                                                <p class="mt-2">设备在地图上的位置</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 协议参数 -->
+                    <div class="tab-pane fade" id="protocol" role="tabpanel">
+                        <div class="card device-info-card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">协议参数</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-3">
+                                    <div class="col-md-12">
+                                        <h5>RTSP协议</h5>
+                                        <p class="text-muted">实时流传输协议，用于视频流的传输</p>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <table class="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>参数名</th>
+                                                    <th>值</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>主码流地址</td>
+                                                    <td>rtsp://192.168.1.100:554/stream1</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>子码流地址</td>
+                                                    <td>rtsp://192.168.1.100:554/stream2</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>传输模式</td>
+                                                    <td>TCP</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>认证方式</td>
+                                                    <td>Basic</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>超时时间</td>
+                                                    <td>60秒</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="card bg-light">
+                                            <div class="card-body">
+                                                <h6>协议测试</h6>
+                                                <p>测试设备RTSP连接是否正常</p>
+                                                <button class="btn btn-primary btn-sm">测试连接</button>
+                                                <div class="mt-2">
+                                                    <span class="badge badge-success">测试成功</span>
+                                                    <small class="text-muted ml-2">2023-06-27 10:25:30</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row mt-4">
+                                    <div class="col-md-12">
+                                        <h5>ONVIF协议</h5>
+                                        <p class="text-muted">网络视频设备开放接口协议</p>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <table class="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>参数名</th>
+                                                    <th>值</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>ONVIF地址</td>
+                                                    <td>http://192.168.1.100:8000/onvif/device_service</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>协议版本</td>
+                                                    <td>17.06</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>PTZ支持</td>
+                                                    <td>是</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="card bg-light">
+                                            <div class="card-body">
+                                                <h6>协议测试</h6>
+                                                <p>测试设备ONVIF连接是否正常</p>
+                                                <button class="btn btn-primary btn-sm">测试连接</button>
+                                                <div class="mt-2">
+                                                    <span class="badge badge-success">测试成功</span>
+                                                    <small class="text-muted ml-2">2023-06-27 10:25:45</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 设备指标 -->
+                    <div class="tab-pane fade" id="metrics" role="tabpanel">
+                        <div class="card device-info-card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">设备指标</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="card bg-light mb-3">
+                                            <div class="card-body">
+                                                <h6>CPU使用率</h6>
+                                                <div class="progress">
+                                                    <div class="progress-bar" role="progressbar" style="width: 35%;" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100">35%</div>
+                                                </div>
+                                                <small class="text-muted">最后更新: 2023-06-27 10:30:00</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="card bg-light mb-3">
+                                            <div class="card-body">
+                                                <h6>内存使用率</h6>
+                                                <div class="progress">
+                                                    <div class="progress-bar bg-warning" role="progressbar" style="width: 75%;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">75%</div>
+                                                </div>
+                                                <small class="text-muted">最后更新: 2023-06-27 10:30:00</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="card bg-light mb-3">
+                                            <div class="card-body">
+                                                <h6>磁盘使用率</h6>
+                                                <div class="progress">
+                                                    <div class="progress-bar bg-info" role="progressbar" style="width: 50%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">50%</div>
+                                                </div>
+                                                <small class="text-muted">最后更新: 2023-06-27 10:30:00</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="card bg-light mb-3">
+                                            <div class="card-body">
+                                                <h6>网络带宽</h6>
+                                                <div class="progress">
+                                                    <div class="progress-bar bg-success" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
+                                                </div>
+                                                <small class="text-muted">最后更新: 2023-06-27 10:30:00</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row mt-3">
+                                    <div class="col-md-12 text-center">
+                                        <button class="btn btn-primary">查看历史指标</button>
+                                        <button class="btn btn-secondary">刷新指标数据</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 设备日志 -->
+                    <div class="tab-pane fade" id="logs" role="tabpanel">
+                        <div class="card device-info-card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0">设备日志</h5>
+                                <div>
+                                    <select class="form-control form-control-sm">
+                                        <option value="all">全部日志</option>
+                                        <option value="error">错误日志</option>
+                                        <option value="warning">警告日志</option>
+                                        <option value="info">信息日志</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>时间</th>
+                                                <th>类型</th>
+                                                <th>事件</th>
+                                                <th>详情</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>2023-06-27 10:30:15</td>
+                                                <td><span class="badge badge-info">信息</span></td>
+                                                <td>设备心跳</td>
+                                                <td>设备正常心跳响应</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2023-06-27 10:15:30</td>
+                                                <td><span class="badge badge-info">信息</span></td>
+                                                <td>设备心跳</td>
+                                                <td>设备正常心跳响应</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2023-06-27 10:00:45</td>
+                                                <td><span class="badge badge-info">信息</span></td>
+                                                <td>设备心跳</td>
+                                                <td>设备正常心跳响应</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2023-06-27 09:50:12</td>
+                                                <td><span class="badge badge-warning">警告</span></td>
+                                                <td>视频卡顿</td>
+                                                <td>视频流传输延迟超过阈值</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2023-06-27 09:45:00</td>
+                                                <td><span class="badge badge-info">信息</span></td>
+                                                <td>设备心跳</td>
+                                                <td>设备正常心跳响应</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2023-06-27 09:30:00</td>
+                                                <td><span class="badge badge-info">信息</span></td>
+                                                <td>设备心跳</td>
+                                                <td>设备正常心跳响应</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2023-06-27 08:15:22</td>
+                                                <td><span class="badge badge-danger">错误</span></td>
+                                                <td>连接断开</td>
+                                                <td>设备连接意外断开，自动重连成功</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="text-center mt-3">
+                                    <button class="btn btn-primary btn-sm">查看更多日志</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../assets/js/jquery.min.js"></script>
+    <script src="../assets/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/scripts.js"></script>
+</body>
+</html> 

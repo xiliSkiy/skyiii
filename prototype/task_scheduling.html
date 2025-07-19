@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能监控系统 - 采集任务调度</title>
+    <link href="https://unpkg.com/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --sidebar-width: 250px;
+            --topbar-height: 60px;
+            --primary-color: #1e3c72;
+            --secondary-color: #2a5298;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            background-color: #f5f7fb;
+        }
+        
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--primary-color), var(--secondary-color));
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            z-index: 1000;
+            transition: all 0.3s;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            color: white;
+        }
+        
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 20px;
+            min-height: 100vh;
+            transition: all 0.3s;
+        }
+        
+        .topbar {
+            height: var(--topbar-height);
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: var(--sidebar-width);
+            z-index: 999;
+            transition: all 0.3s;
+        }
+        
+        .content-area {
+            margin-top: calc(var(--topbar-height) + 20px);
+            padding-bottom: 20px;
+        }
+        
+        .logo {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 20px;
+            font-weight: bold;
+            height: var(--topbar-height);
+            display: flex;
+            align-items: center;
+        }
+        
+        .menu-item {
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+        }
+        
+        .menu-item:hover, .menu-item.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-left: 4px solid white;
+        }
+        
+        .menu-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+        
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 15px 20px;
+            font-weight: 600;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-icon {
+            display: inline-flex;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+        
+        .stat-card h3 {
+            font-size: 28px;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+        
+        .stat-card p {
+            margin-bottom: 0;
+            color: #6c757d;
+            font-size: 14px;
+        }
+        
+        .bg-gradient-primary {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+        
+        .bg-gradient-success {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+        }
+        
+        .bg-gradient-warning {
+            background: linear-gradient(45deg, #ffc107, #fd7e14);
+            color: white;
+        }
+        
+        .bg-gradient-danger {
+            background: linear-gradient(45deg, #dc3545, #e74c3c);
+            color: white;
+        }
+        
+        .task-card {
+            padding: 15px;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            transition: all 0.2s ease;
+        }
+        
+        .task-card:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            border-color: #adb5bd;
+        }
+        
+        .task-status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .status-running {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+        
+        .status-scheduled {
+            background-color: rgba(0, 123, 255, 0.1);
+            color: #007bff;
+        }
+        
+        .status-paused {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+        
+        .status-completed {
+            background-color: rgba(108, 117, 125, 0.1);
+            color: #6c757d;
+        }
+        
+        .status-failed {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+        
+        .task-type-badge {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        
+        .task-priority {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+        }
+        
+        .priority-high {
+            background-color: #dc3545;
+        }
+        
+        .priority-medium {
+            background-color: #ffc107;
+        }
+        
+        .priority-low {
+            background-color: #6c757d;
+        }
+        
+        .progress {
+            height: 8px;
+            margin-top: 8px;
+        }
+        
+        .date-picker-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .date-picker {
+            flex: 1;
+            position: relative;
+        }
+        
+        .date-picker input {
+            width: 100%;
+            padding-right: 30px;
+        }
+        
+        .date-picker i {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <!-- 侧边导航栏 -->
+    <div class="sidebar">
+        <div class="logo">
+            <i class="fas fa-shield-alt me-2"></i> SkyEye 智能监控
+        </div>
+        <div class="menu-items mt-4">
+            <a href="dashboard.html" class="menu-item">
+                <i class="fas fa-tachometer-alt"></i> 控制台
+            </a>
+            <a href="monitoring.html" class="menu-item">
+                <i class="fas fa-video"></i> 监控管理
+            </a>
+            <a href="alerts.html" class="menu-item">
+                <i class="fas fa-bell"></i> 报警中心
+            </a>
+            <a href="analytics.html" class="menu-item">
+                <i class="fas fa-chart-line"></i> 数据分析
+            </a>
+            <a href="devices.html" class="menu-item">
+                <i class="fas fa-cog"></i> 设备管理
+            </a>
+            <a href="task_scheduling.html" class="menu-item active">
+                <i class="fas fa-tasks"></i> 任务调度
+            </a>
+            <a href="users.html" class="menu-item">
+                <i class="fas fa-user-shield"></i> 用户管理
+            </a>
+            <a href="history.html" class="menu-item">
+                <i class="fas fa-history"></i> 历史记录
+            </a>
+            <a href="settings.html" class="menu-item">
+                <i class="fas fa-sliders-h"></i> 系统设置
+            </a>
+        </div>
+    </div>
+
+    <!-- 顶部导航栏 -->
+    <div class="topbar">
+        <button type="button" class="btn btn-sm d-md-none" id="sidebarCollapse">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <div class="d-flex align-items-center ms-auto">
+            <div class="input-group search-box">
+                <input type="text" class="form-control form-control-sm" placeholder="搜索...">
+                <button class="btn btn-sm btn-outline-secondary" type="button">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+            
+            <button type="button" class="btn btn-sm position-relative ms-2">
+                <i class="far fa-bell"></i>
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    5
+                </span>
+            </button>
+            
+            <div class="dropdown ms-3">
+                <a class="dropdown-toggle d-flex align-items-center text-decoration-none" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <div class="rounded-circle bg-light d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                        <i class="fas fa-user text-secondary"></i>
+                    </div>
+                    <div class="ms-2 d-none d-sm-block">
+                        <div class="small fw-bold">管理员</div>
+                        <div class="small text-muted">系统管理员</div>
+                    </div>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-user-circle me-2"></i> 个人信息</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i> 账号设置</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt me-2"></i> 退出登录</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主内容区 -->
+    <div class="main-content">
+        <div class="content-area">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h4>采集任务调度</h4>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a href="dashboard.html">控制台</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">采集任务调度</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div>
+                    <a href="task_create.html" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i> 创建任务
+                    </a>
+                </div>
+            </div>
+            
+            <!-- 统计卡片 -->
+            <div class="row">
+                <div class="col-md-3 col-sm-6">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-gradient-primary">
+                            <i class="fas fa-tasks"></i>
+                        </div>
+                        <h3>24</h3>
+                        <p>总任务数</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-gradient-success">
+                            <i class="fas fa-play-circle"></i>
+                        </div>
+                        <h3>8</h3>
+                        <p>运行中任务</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-gradient-warning">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <h3>12</h3>
+                        <p>已调度任务</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-gradient-danger">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <h3>3</h3>
+                        <p>异常任务</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 任务筛选 -->
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-filter me-2"></i> 任务筛选
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <label for="taskType" class="form-label">任务类型</label>
+                            <select class="form-select" id="taskType">
+                                <option value="all" selected>全部类型</option>
+                                <option value="realtime">实时采集</option>
+                                <option value="scheduled">定时采集</option>
+                                <option value="periodic">周期采集</option>
+                                <option value="triggered">触发式采集</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="taskStatus" class="form-label">任务状态</label>
+                            <select class="form-select" id="taskStatus">
+                                <option value="all" selected>全部状态</option>
+                                <option value="running">运行中</option>
+                                <option value="scheduled">已调度</option>
+                                <option value="paused">已暂停</option>
+                                <option value="completed">已完成</option>
+                                <option value="failed">执行失败</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="taskPriority" class="form-label">优先级</label>
+                            <select class="form-select" id="taskPriority">
+                                <option value="all" selected>全部优先级</option>
+                                <option value="high">高</option>
+                                <option value="medium">中</option>
+                                <option value="low">低</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="taskTag" class="form-label">任务标签</label>
+                            <select class="form-select" id="taskTag">
+                                <option value="all" selected>全部标签</option>
+                                <option value="security">安全监控</option>
+                                <option value="analysis">数据分析</option>
+                                <option value="maintenance">系统维护</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">创建日期范围</label>
+                            <div class="date-picker-wrapper">
+                                <div class="date-picker">
+                                    <input type="date" class="form-control" id="startDate">
+                                    <i class="far fa-calendar"></i>
+                                </div>
+                                <span>-</span>
+                                <div class="date-picker">
+                                    <input type="date" class="form-control" id="endDate">
+                                    <i class="far fa-calendar"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="taskSearch" class="form-label">搜索</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="taskSearch" placeholder="任务名称/ID/负责人">
+                                <button class="btn btn-outline-secondary" type="button">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-end mt-2">
+                        <button class="btn btn-outline-secondary me-2">
+                            <i class="fas fa-redo-alt me-1"></i> 重置
+                        </button>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-filter me-1"></i> 应用筛选
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 任务列表 -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <i class="fas fa-list me-2"></i> 任务列表
+                    </div>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-cloud-download-alt me-1"></i> 导出
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-sync-alt me-1"></i> 刷新
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <span class="me-3">共 <strong>24</strong> 个任务</span>
+                                <span>选中 <strong>0</strong> 个任务</span>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="batchActionDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    批量操作
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="batchActionDropdown">
+                                    <li><a class="dropdown-item" href="#"><i class="fas fa-play me-2"></i> 启动</a></li>
+                                    <li><a class="dropdown-item" href="#"><i class="fas fa-pause me-2"></i> 暂停</a></li>
+                                    <li><a class="dropdown-item" href="#"><i class="fas fa-stop me-2"></i> 停止</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-trash me-2"></i> 删除</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <!-- 任务卡片列表 -->
+                        <div class="task-list">
+                            <!-- 任务卡片 1 -->
+                            <div class="task-card">
+                                <div class="row align-items-center">
+                                    <div class="col-md-5">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="" id="task1">
+                                            <label class="form-check-label" for="task1">
+                                                <h6 class="mb-1">办公区人脸识别</h6>
+                                            </label>
+                                        </div>
+                                        <div class="d-flex align-items-center small text-muted mt-1">
+                                            <span class="me-2">ID: TASK-2023-001</span>
+                                            <span class="task-type-badge bg-info text-white">实时采集</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="d-flex flex-column">
+                                            <div class="mb-1">
+                                                <span class="task-status status-running">运行中</span>
+                                            </div>
+                                            <div class="small text-muted">
+                                                <i class="far fa-clock me-1"></i> 2023-10-25 08:30 开始
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="d-flex align-items-center mb-1">
+                                            <span class="task-priority priority-high"></span>
+                                            <span class="small">高优先级</span>
+                                        </div>
+                                        <div class="small text-muted">
+                                            <i class="fas fa-video me-1"></i> 5台设备
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 text-end">
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                操作
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                <li><a class="dropdown-item" href="#"><i class="fas fa-eye me-2"></i> 查看详情</a></li>
+                                                <li><a class="dropdown-item" href="#"><i class="fas fa-pause me-2"></i> 暂停</a></li>
+                                                <li><a class="dropdown-item" href="#"><i class="fas fa-stop me-2"></i> 停止</a></li>
+                                                <li><a class="dropdown-item" href="#"><i class="fas fa-edit me-2"></i> 编辑</a></li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-trash me-2"></i> 删除</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="progress">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 65%" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                            
+                            <!-- 任务卡片 2 -->
+                            <div class="task-card">
+                                <div class="row align-items-center">
+                                    <div class="col-md-5">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="" id="task2">
+                                            <label class="form-check-label" for="task2">
+                                                <h6 class="mb-1">停车场监控巡检</h6>
+                                            </label>
+                                        </div>
+                                        <div class="d-flex align-items-center small text-muted mt-1">
+                                            <span class="me-2">ID: TASK-2023-002</span>
+                                            <span class="task-type-badge bg-primary text-white">定时采集</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="d-flex flex-column">
+                                            <div class="mb-1">
+                                                <span class="task-status status-scheduled">已调度</span>
+                                            </div>
+                                            <div class="small text-muted">
+                                                <i class="far fa-clock me-1"></i> 每天 20:00 执行
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="d-flex align-items-center mb-1">
+                                            <span class="task-priority priority-medium"></span>
+                                            <span class="small">中优先级</span>
+                                        </div>
+                                        <div class="small text-muted">
+                                            <i class="fas fa-video me-1"></i> 3台设备
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 text-end">
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                操作
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                <li><a class="dropdown-item" href="#"><i class="fas fa-eye me-2"></i> 查看详情</a></li>
+                                                <li><a class="dropdown-item" href="#"><i class="fas fa-play me-2"></i> 立即执行</a></li>
+                                                <li><a class="dropdown-item" href="#"><i class="fas fa-edit me-2"></i> 编辑</a></li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-trash me-2"></i> 删除</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 任务卡片 3 -->
+                            <div class="task-card">
+                                <div class="row align-items-center">
+                                    <div class="col-md-5">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="" id="task3">
+                                            <label class="form-check-label" for="task3">
+                                                <h6 class="mb-1">周界安全检测</h6>
+                                            </label>
+                                        </div>
+                                        <div class="d-flex align-items-center small text-muted mt-1">
+                                            <span class="me-2">ID: TASK-2023-003</span>
+                                            <span class="task-type-badge bg-warning text-dark">触发式采集</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="d-flex flex-column">
+                                            <div class="mb-1">
+                                                <span class="task-status status-running">运行中</span>
+                                            </div>
+                                            <div class="small text-muted">
+                                                <i class="far fa-clock me-1"></i> 2023-10-24 12:00 开始
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="d-flex align-items-center mb-1">
+                                            <span class="task-priority priority-high"></span>
+                                            <span class="small">高优先级</span>
+                                        </div>
+                                        <div class="small text-muted">
+                                            <i class="fas fa-video me-1"></i> 4台设备
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 text-end">
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                操作
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                <li><a class="dropdown-item" href="#"><i class="fas fa-eye me-2"></i> 查看详情</a></li>
+                                                <li><a class="dropdown-item" href="#"><i class="fas fa-pause me-2"></i> 暂停</a></li>
+                                                <li><a class="dropdown-item" href="#"><i class="fas fa-stop me-2"></i> 停止</a></li>
+                                                <li><a class="dropdown-item" href="#"><i class="fas fa-edit me-2"></i> 编辑</a></li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-trash me-2"></i> 删除</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="progress">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 85%" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                            
+                            <!-- 任务卡片 4 -->
+                            <div class="task-card">
+                                <div class="row align-items-center">
+                                    <div class="col-md-5">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="" id="task4">
+                                            <label class="form-check-label" for="task4">
+                                                <h6 class="mb-1">室内温湿度采集</h6>
+                                            </label>
+                                        </div>
+                                        <div class="d-flex align-items-center small text-muted mt-1">
+                                            <span class="me-2">ID: TASK-2023-004</span>
+                                            <span class="task-type-badge bg-secondary text-white">周期采集</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="d-flex flex-column">
+                                            <div class="mb-1">
+                                                <span class="task-status status-running">运行中</span>
+                                            </div>
+                                            <div class="small text-muted">
+                                                <i class="far fa-clock me-1"></i> 每30分钟执行一次
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="d-flex align-items-center mb-1">
+                                            <span class="task-priority priority-low"></span>
+                                            <span class="small">低优先级</span>
+                                        </div>
+                                        <div class="small text-muted">
+                                            <i class="fas fa-microchip me-1"></i> 6台设备
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 text-end">
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                操作
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                <li><a class="dropdown-item" href="#"><i class="fas fa-eye me-2"></i> 查看详情</a></li>
+                                                <li><a class="dropdown-item" href="#"><i class="fas fa-pause me-2"></i> 暂停</a></li>
+                                                <li><a class="dropdown-item" href="#"><i class="fas fa-stop me-2"></i> 停止</a></li>
+                                                <li><a class="dropdown-item" href="#"><i class="fas fa-edit me-2"></i> 编辑</a></li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-trash me-2"></i> 删除</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="progress">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 40%" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                            
+                            <!-- 任务卡片 5 -->
+                            <div class="task-card">
+                                <div class="row align-items-center">
+                                    <div class="col-md-5">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="" id="task5">
+                                            <label class="form-check-label" for="task5">
+                                                <h6 class="mb-1">夜间动态检测</h6>
+                                            </label>
+                                        </div>
+                                        <div class="d-flex align-items-center small text-muted mt-1">
+                                            <span class="me-2">ID: TASK-2023-005</span>
+                                            <span class="task-type-badge bg-primary text-white">定时采集</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="d-flex flex-column">
+                                            <div class="mb-1">
+                                                <span class="task-status status-paused">已暂停</span>
+                                            </div>
+                                            <div class="small text-muted">
+                                                <i class="far fa-clock me-1"></i> 每天 22:00-06:00
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="d-flex align-items-center mb-1">
+                                            <span class="task-priority priority-medium"></span>
+                                            <span class="small">中优先级</span>
+                                        </div>
+                                        <div class="small text-muted">
+                                            <i class="fas fa-video me-1"></i> 8台设备
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 text-end">
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                操作
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                <li><a class="dropdown-item" href="#"><i class="fas fa-eye me-2"></i> 查看详情</a></li>
+                                                <li><a class="dropdown-item" href="#"><i class="fas fa-play me-2"></i> 继续</a></li>
+                                                <li><a class="dropdown-item" href="#"><i class="fas fa-edit me-2"></i> 编辑</a></li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-trash me-2"></i> 删除</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 任务卡片 6 -->
+                            <div class="task-card">
+                                <div class="row align-items-center">
+                                    <div class="col-md-5">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="" id="task6">
+                                            <label class="form-check-label" for="task6">
+                                                <h6 class="mb-1">系统日志收集</h6>
+                                            </label>
+                                        </div>
+                                        <div class="d-flex align-items-center small text-muted mt-1">
+                                            <span class="me-2">ID: TASK-2023-006</span>
+                                            <span class="task-type-badge bg-secondary text-white">周期采集</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="d-flex flex-column">
+                                            <div class="mb-1">
+                                                <span class="task-status status-failed">执行失败</span>
+                                            </div>
+                                            <div class="small text-muted">
+                                                <i class="far fa-clock me-1"></i> 2023-10-24 15:30 失败
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="d-flex align-items-center mb-1">
+                                            <span class="task-priority priority-low"></span>
+                                            <span class="small">低优先级</span>
+                                        </div>
+                                        <div class="small text-muted">
+                                            <i class="fas fa-server me-1"></i> 所有系统
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 text-end">
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                操作
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                <li><a class="dropdown-item" href="#"><i class="fas fa-eye me-2"></i> 查看详情</a></li>
+                                                <li><a class="dropdown-item" href="#"><i class="fas fa-redo me-2"></i> 重试</a></li>
+                                                <li><a class="dropdown-item" href="#"><i class="fas fa-edit me-2"></i> 编辑</a></li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-trash me-2"></i> 删除</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 分页控件 -->
+                        <div class="d-flex justify-content-between align-items-center mt-4">
+                            <div class="small text-muted">
+                                显示 1 至 6，共 24 个任务
+                            </div>
+                            <nav aria-label="任务列表分页">
+                                <ul class="pagination pagination-sm mb-0">
+                                    <li class="page-item disabled">
+                                        <a class="page-link" href="#" aria-label="Previous">
+                                            <span aria-hidden="true">&laquo;</span>
+                                        </a>
+                                    </li>
+                                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">4</a></li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="#" aria-label="Next">
+                                            <span aria-hidden="true">&raquo;</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    每页 10 条
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" href="#">每页 5 条</a></li>
+                                    <li><a class="dropdown-item active" href="#">每页 10 条</a></li>
+                                    <li><a class="dropdown-item" href="#">每页 20 条</a></li>
+                                    <li><a class="dropdown-item" href="#">每页 50 条</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

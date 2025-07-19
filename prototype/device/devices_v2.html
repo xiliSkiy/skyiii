@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyEye - 设备管理</title>
+    <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../assets/css/fontawesome.min.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <style>
+        .filter-section {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        .advanced-filter {
+            padding-top: 15px;
+            border-top: 1px dashed #ddd;
+        }
+        .device-stats {
+            background-color: #fff;
+            padding: 10px 15px;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,.1);
+            margin-bottom: 15px;
+        }
+        .device-stat-item {
+            display: inline-block;
+            margin-right: 20px;
+        }
+        .device-stat-item .badge {
+            margin-left: 5px;
+        }
+        .view-toggle {
+            margin-bottom: 15px;
+        }
+        .tag-item {
+            display: inline-block;
+            padding: 2px 8px;
+            background-color: #e9ecef;
+            border-radius: 15px;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+        #map-view, #chart-view {
+            height: 500px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 左侧导航 -->
+        <div class="sidebar">
+            <div class="logo">
+                <img src="../assets/images/logo.png" alt="SkyEye Logo">
+                <h2>SkyEye</h2>
+            </div>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="../dashboard.html"><i class="fas fa-tachometer-alt"></i> 控制台</a></li>
+                    
+                    <!-- 设备管理菜单（展开） -->
+                    <li class="active">
+                        <a href="#deviceSubMenu" data-toggle="collapse" aria-expanded="true">
+                            <i class="fas fa-server"></i> 设备管理
+                            <i class="fas fa-angle-down"></i>
+                        </a>
+                        <ul class="collapse show" id="deviceSubMenu">
+                            <li class="active"><a href="devices_v2.html">设备列表</a></li>
+                            <li><a href="device_add_v2.html">添加设备</a></li>
+                            <li><a href="device_types.html">设备类型管理</a></li>
+                            <li><a href="device_areas.html">区域管理</a></li>
+                            <li><a href="device_groups.html">设备分组</a></li>
+                            <li><a href="device_tags.html">标签管理</a></li>
+                            <li><a href="device_templates.html">设备模板</a></li>
+                            <li><a href="device_protocols.html">设备协议</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li><a href="../monitoring.html"><i class="fas fa-video"></i> 监控管理</a></li>
+                    <li><a href="../alerts.html"><i class="fas fa-bell"></i> 报警中心</a></li>
+                    <li><a href="../task_scheduling.html"><i class="fas fa-tasks"></i> 任务调度</a></li>
+                    <li><a href="../analytics.html"><i class="fas fa-chart-line"></i> 数据分析</a></li>
+                    <li><a href="../settings.html"><i class="fas fa-cog"></i> 系统设置</a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <!-- 顶部导航 -->
+            <header class="top-bar">
+                <div class="search-container">
+                    <input type="text" placeholder="搜索...">
+                    <i class="fas fa-search"></i>
+                </div>
+                <div class="top-bar-right">
+                    <div class="notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge">3</span>
+                    </div>
+                    <div class="user-profile">
+                        <img src="../assets/images/user-avatar.png" alt="用户头像">
+                        <span>管理员</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- 内容区域 -->
+            <div class="content">
+                <div class="content-header">
+                    <h2>设备管理</h2>
+                    <div class="actions">
+                        <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                            <i class="fas fa-plus"></i> 添加设备
+                        </button>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="device_add_v2.html">手动添加</a>
+                            <a class="dropdown-item" href="#">从模板创建</a>
+                            <a class="dropdown-item" href="#">批量导入</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 筛选区域 -->
+                <div class="filter-section">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>设备名称</label>
+                                <input type="text" class="form-control" placeholder="请输入设备名称">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>设备类型</label>
+                                <select class="form-control">
+                                    <option value="">全部类型</option>
+                                    <option value="CAMERA">摄像头</option>
+                                    <option value="SENSOR">传感器</option>
+                                    <option value="ACCESS">门禁</option>
+                                    <option value="OTHER">其他</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>设备状态</label>
+                                <select class="form-control">
+                                    <option value="">全部状态</option>
+                                    <option value="1">在线</option>
+                                    <option value="0">离线</option>
+                                    <option value="2">故障</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>快速创建</label>
+                                <select class="form-control">
+                                    <option value="">请选择模板</option>
+                                    <option value="1">会议室摄像头</option>
+                                    <option value="2">温湿度传感器</option>
+                                    <option value="3">门禁控制器</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="#" class="advanced-filter-toggle" data-toggle="collapse" data-target="#advancedFilter">
+                        <i class="fas fa-filter"></i> 高级筛选
+                        <i class="fas fa-angle-down"></i>
+                    </a>
+
+                    <!-- 高级筛选区域 -->
+                    <div class="collapse" id="advancedFilter">
+                        <div class="advanced-filter">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>所属区域</label>
+                                        <select class="form-control">
+                                            <option value="">全部区域</option>
+                                            <option value="NORTH">北区</option>
+                                            <option value="SOUTH">南区</option>
+                                            <option value="EAST">东区</option>
+                                            <option value="WEST">西区</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>设备分组</label>
+                                        <select class="form-control">
+                                            <option value="">全部分组</option>
+                                            <option value="1">安防监控</option>
+                                            <option value="2">环境监测</option>
+                                            <option value="3">门禁管理</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>设备标签</label>
+                                        <select class="form-control" multiple>
+                                            <option value="IMPORTANT">重要</option>
+                                            <option value="OUTDOOR">室外</option>
+                                            <option value="INDOOR">室内</option>
+                                            <option value="TEST">测试</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>设备协议</label>
+                                        <select class="form-control">
+                                            <option value="">全部协议</option>
+                                            <option value="RTSP">RTSP</option>
+                                            <option value="ONVIF">ONVIF</option>
+                                            <option value="MODBUS">MODBUS</option>
+                                            <option value="HTTP">HTTP</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="filter-actions text-right mt-3">
+                        <button class="btn btn-secondary">重置</button>
+                        <button class="btn btn-primary">搜索</button>
+                    </div>
+                </div>
+
+                <!-- 视图切换与操作按钮 -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="view-toggle btn-group">
+                            <button class="btn btn-sm btn-primary active" data-view="table">
+                                <i class="fas fa-list"></i> 列表
+                            </button>
+                            <button class="btn btn-sm btn-light" data-view="map">
+                                <i class="fas fa-map"></i> 地图
+                            </button>
+                            <button class="btn btn-sm btn-light" data-view="chart">
+                                <i class="fas fa-chart-pie"></i> 图表
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-6 text-right">
+                        <div class="dropdown d-inline-block">
+                            <button class="btn btn-secondary dropdown-toggle" data-toggle="dropdown">
+                                批量操作
+                            </button>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="#">批量删除</a>
+                                <a class="dropdown-item" href="#">批量修改状态</a>
+                                <a class="dropdown-item" href="#">批量设置标签</a>
+                                <a class="dropdown-item" href="#">批量设置分组</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 设备统计信息 -->
+                <div class="device-stats">
+                    <div class="device-stat-item">
+                        <span>设备总数:</span>
+                        <span class="badge badge-secondary">100</span>
+                    </div>
+                    <div class="device-stat-item">
+                        <span>在线:</span>
+                        <span class="badge badge-success">80</span>
+                    </div>
+                    <div class="device-stat-item">
+                        <span>离线:</span>
+                        <span class="badge badge-danger">15</span>
+                    </div>
+                    <div class="device-stat-item">
+                        <span>故障:</span>
+                        <span class="badge badge-warning">5</span>
+                    </div>
+                </div>
+
+                <!-- 表格视图 -->
+                <div id="table-view">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th width="40px">
+                                        <input type="checkbox" class="select-all">
+                                    </th>
+                                    <th>设备名称</th>
+                                    <th>设备类型</th>
+                                    <th>IP地址</th>
+                                    <th>状态</th>
+                                    <th>所属区域</th>
+                                    <th>标签</th>
+                                    <th>最后心跳</th>
+                                    <th width="150px">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><input type="checkbox" class="select-item"></td>
+                                    <td>前门摄像头</td>
+                                    <td>网络摄像头</td>
+                                    <td>192.168.1.100</td>
+                                    <td><span class="badge badge-success">在线</span></td>
+                                    <td>北区</td>
+                                    <td>
+                                        <span class="tag-item">重要</span>
+                                        <span class="tag-item">入口</span>
+                                    </td>
+                                    <td>2023-06-27 10:30:15</td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-info" title="详情" onclick="location.href='device_detail_v2.html?id=1'">
+                                                <i class="fas fa-info-circle"></i>
+                                            </button>
+                                            <button class="btn btn-primary" title="编辑">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-success" title="监控">
+                                                <i class="fas fa-video"></i>
+                                            </button>
+                                            <button class="btn btn-danger" title="删除">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><input type="checkbox" class="select-item"></td>
+                                    <td>会议室摄像头</td>
+                                    <td>网络摄像头</td>
+                                    <td>192.168.1.101</td>
+                                    <td><span class="badge badge-success">在线</span></td>
+                                    <td>东区</td>
+                                    <td>
+                                        <span class="tag-item">会议室</span>
+                                        <span class="tag-item">室内</span>
+                                    </td>
+                                    <td>2023-06-27 10:28:45</td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-info" title="详情" onclick="location.href='device_detail_v2.html?id=2'">
+                                                <i class="fas fa-info-circle"></i>
+                                            </button>
+                                            <button class="btn btn-primary" title="编辑">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-success" title="监控">
+                                                <i class="fas fa-video"></i>
+                                            </button>
+                                            <button class="btn btn-danger" title="删除">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><input type="checkbox" class="select-item"></td>
+                                    <td>温湿度传感器A</td>
+                                    <td>传感器</td>
+                                    <td>192.168.1.102</td>
+                                    <td><span class="badge badge-danger">离线</span></td>
+                                    <td>南区</td>
+                                    <td>
+                                        <span class="tag-item">环境</span>
+                                    </td>
+                                    <td>2023-06-26 15:10:22</td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-info" title="详情" onclick="location.href='device_detail_v2.html?id=3'">
+                                                <i class="fas fa-info-circle"></i>
+                                            </button>
+                                            <button class="btn btn-primary" title="编辑">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-warning" title="检测连接">
+                                                <i class="fas fa-sync"></i>
+                                            </button>
+                                            <button class="btn btn-danger" title="删除">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><input type="checkbox" class="select-item"></td>
+                                    <td>正门门禁</td>
+                                    <td>门禁</td>
+                                    <td>192.168.1.103</td>
+                                    <td><span class="badge badge-warning">故障</span></td>
+                                    <td>西区</td>
+                                    <td>
+                                        <span class="tag-item">重要</span>
+                                        <span class="tag-item">门禁</span>
+                                    </td>
+                                    <td>2023-06-27 08:15:33</td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-info" title="详情" onclick="location.href='device_detail_v2.html?id=4'">
+                                                <i class="fas fa-info-circle"></i>
+                                            </button>
+                                            <button class="btn btn-primary" title="编辑">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-warning" title="检测连接">
+                                                <i class="fas fa-sync"></i>
+                                            </button>
+                                            <button class="btn btn-danger" title="删除">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 地图视图 -->
+                <div id="map-view" class="text-center">
+                    <div style="padding-top: 200px;">
+                        <h3>设备地图视图</h3>
+                        <p>此处将显示设备在地图上的分布情况</p>
+                    </div>
+                </div>
+
+                <!-- 图表视图 -->
+                <div id="chart-view" class="text-center">
+                    <div style="padding-top: 200px;">
+                        <h3>设备统计图表</h3>
+                        <p>此处将显示设备类型、区域分布等统计图表</p>
+                    </div>
+                </div>
+
+                <!-- 分页 -->
+                <div class="pagination-container">
+                    <nav>
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#">
+                                    <i class="fas fa-angle-left"></i>
+                                </a>
+                            </li>
+                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item">
+                                <a class="page-link" href="#">
+                                    <i class="fas fa-angle-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../assets/js/jquery.min.js"></script>
+    <script src="../assets/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/scripts.js"></script>
+    <script>
+        // 视图切换
+        $(document).ready(function() {
+            $('.view-toggle button').click(function() {
+                $('.view-toggle button').removeClass('active').addClass('btn-light').removeClass('btn-primary');
+                $(this).addClass('active').removeClass('btn-light').addClass('btn-primary');
+                
+                var view = $(this).data('view');
+                $('#table-view, #map-view, #chart-view').hide();
+                $('#' + view + '-view').show();
+            });
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能监控系统 - 系统设置</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --sidebar-width: 250px;
+            --topbar-height: 60px;
+            --primary-color: #1e3c72;
+            --secondary-color: #2a5298;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            background-color: #f5f7fb;
+        }
+        
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--primary-color), var(--secondary-color));
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            z-index: 1000;
+            transition: all 0.3s;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            color: white;
+        }
+        
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 20px;
+            min-height: 100vh;
+            transition: all 0.3s;
+        }
+        
+        .topbar {
+            height: var(--topbar-height);
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: var(--sidebar-width);
+            z-index: 999;
+            transition: all 0.3s;
+        }
+        
+        .content-area {
+            margin-top: calc(var(--topbar-height) + 20px);
+            padding-bottom: 20px;
+        }
+        
+        .logo {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 20px;
+            font-weight: bold;
+            height: var(--topbar-height);
+            display: flex;
+            align-items: center;
+        }
+        
+        .menu-item {
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+        }
+        
+        .menu-item:hover, .menu-item.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-left: 4px solid white;
+        }
+        
+        .menu-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+        
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 15px 20px;
+            font-weight: 600;
+        }
+        
+        .settings-card {
+            transition: transform 0.3s, box-shadow 0.3s;
+            height: 100%;
+        }
+        
+        .settings-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .settings-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+        
+        .settings-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .settings-description {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 侧边导航栏 -->
+    <div class="sidebar">
+        <div class="logo">
+            <i class="fas fa-shield-alt me-2"></i> SkyEye 智能监控
+        </div>
+        <div class="menu-items mt-4">
+            <a href="dashboard.html" class="menu-item">
+                <i class="fas fa-tachometer-alt"></i> 控制台
+            </a>
+            <a href="monitoring.html" class="menu-item">
+                <i class="fas fa-video"></i> 监控管理
+            </a>
+            <a href="alerts.html" class="menu-item">
+                <i class="fas fa-bell"></i> 报警中心
+            </a>
+            <a href="analytics.html" class="menu-item">
+                <i class="fas fa-chart-line"></i> 数据分析
+            </a>
+            <a href="devices.html" class="menu-item">
+                <i class="fas fa-cog"></i> 设备管理
+            </a>
+            <a href="users.html" class="menu-item">
+                <i class="fas fa-user-shield"></i> 用户管理
+            </a>
+            <a href="history.html" class="menu-item">
+                <i class="fas fa-history"></i> 历史记录
+            </a>
+            <a href="settings.html" class="menu-item active">
+                <i class="fas fa-sliders-h"></i> 系统设置
+            </a>
+        </div>
+    </div>
+
+    <!-- 顶部导航栏 -->
+    <div class="topbar">
+        <button type="button" class="btn btn-sm d-md-none" id="sidebarCollapse">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <div class="d-flex align-items-center ms-auto">
+            <div class="input-group search-box">
+                <input type="text" class="form-control form-control-sm" placeholder="搜索...">
+                <button class="btn btn-sm btn-outline-secondary" type="button">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+            
+            <button type="button" class="btn btn-sm position-relative ms-2">
+                <i class="far fa-bell"></i>
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    5
+                </span>
+            </button>
+            
+            <div class="dropdown ms-3">
+                <a class="dropdown-toggle d-flex align-items-center text-decoration-none" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <div class="rounded-circle bg-light d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                        <i class="fas fa-user text-secondary"></i>
+                    </div>
+                    <div class="ms-2 d-none d-sm-block">
+                        <div class="small fw-bold">管理员</div>
+                        <div class="small text-muted">系统管理员</div>
+                    </div>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-user-circle me-2"></i> 个人信息</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i> 账号设置</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt me-2"></i> 退出登录</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主内容区 -->
+    <div class="main-content">
+        <div class="content-area">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4>系统设置</h4>
+            </div>
+            
+            <div class="row">
+                <!-- 系统配置卡片 -->
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card settings-card">
+                        <div class="card-body text-center p-4">
+                            <div class="settings-icon">
+                                <i class="fas fa-cogs"></i>
+                            </div>
+                            <h5 class="settings-title">系统配置</h5>
+                            <p class="settings-description">基本系统参数配置，包括系统名称、Logo、界面主题等全局设置。</p>
+                            <a href="settings_system.html" class="btn btn-primary">
+                                <i class="fas fa-wrench me-1"></i> 管理设置
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 网络配置卡片 -->
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card settings-card">
+                        <div class="card-body text-center p-4">
+                            <div class="settings-icon">
+                                <i class="fas fa-network-wired"></i>
+                            </div>
+                            <h5 class="settings-title">网络配置</h5>
+                            <p class="settings-description">设置网络参数，包括IP地址配置、端口设置、代理服务器等。</p>
+                            <a href="settings_network.html" class="btn btn-primary">
+                                <i class="fas fa-wrench me-1"></i> 管理设置
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 存储管理卡片 -->
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card settings-card">
+                        <div class="card-body text-center p-4">
+                            <div class="settings-icon">
+                                <i class="fas fa-database"></i>
+                            </div>
+                            <h5 class="settings-title">存储管理</h5>
+                            <p class="settings-description">配置视频存储策略、存储空间管理、云存储配置等。</p>
+                            <a href="settings_storage.html" class="btn btn-primary">
+                                <i class="fas fa-wrench me-1"></i> 管理设置
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 报警规则卡片 -->
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card settings-card">
+                        <div class="card-body text-center p-4">
+                            <div class="settings-icon">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <h5 class="settings-title">报警规则</h5>
+                            <p class="settings-description">设置报警触发条件、报警级别、通知方式等警报相关配置。</p>
+                            <a href="settings_alerts.html" class="btn btn-primary">
+                                <i class="fas fa-wrench me-1"></i> 管理设置
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 日志管理卡片 -->
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card settings-card">
+                        <div class="card-body text-center p-4">
+                            <div class="settings-icon">
+                                <i class="fas fa-clipboard-list"></i>
+                            </div>
+                            <h5 class="settings-title">日志管理</h5>
+                            <p class="settings-description">配置系统日志记录策略、日志级别、保留期限等日志相关设置。</p>
+                            <a href="settings_logs.html" class="btn btn-primary">
+                                <i class="fas fa-wrench me-1"></i> 管理设置
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 备份恢复卡片 -->
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card settings-card">
+                        <div class="card-body text-center p-4">
+                            <div class="settings-icon">
+                                <i class="fas fa-sync"></i>
+                            </div>
+                            <h5 class="settings-title">备份与恢复</h5>
+                            <p class="settings-description">系统配置备份、数据备份、系统恢复与重置等功能设置。</p>
+                            <a href="settings_backup.html" class="btn btn-primary">
+                                <i class="fas fa-wrench me-1"></i> 管理设置
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 安全设置卡片 -->
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card settings-card">
+                        <div class="card-body text-center p-4">
+                            <div class="settings-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <h5 class="settings-title">安全设置</h5>
+                            <p class="settings-description">密码策略、访问控制、安全审计、加密设置等安全相关配置。</p>
+                            <a href="settings_security.html" class="btn btn-primary">
+                                <i class="fas fa-wrench me-1"></i> 管理设置
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 通知设置卡片 -->
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card settings-card">
+                        <div class="card-body text-center p-4">
+                            <div class="settings-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <h5 class="settings-title">通知设置</h5>
+                            <p class="settings-description">邮件通知、短信通知、APP推送、微信通知等通知渠道配置。</p>
+                            <a href="settings_notifications.html" class="btn btn-primary">
+                                <i class="fas fa-wrench me-1"></i> 管理设置
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 智能分析卡片 -->
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card settings-card">
+                        <div class="card-body text-center p-4">
+                            <div class="settings-icon">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                            <h5 class="settings-title">智能分析</h5>
+                            <p class="settings-description">人脸识别、行为分析、目标检测等AI算法相关配置设置。</p>
+                            <a href="settings_ai.html" class="btn btn-primary">
+                                <i class="fas fa-wrench me-1"></i> 管理设置
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 指标配置卡片 -->
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card settings-card">
+                        <div class="card-body text-center p-4">
+                            <div class="settings-icon">
+                                <i class="fas fa-chart-bar"></i>
+                            </div>
+                            <h5 class="settings-title">指标配置</h5>
+                            <p class="settings-description">服务器、中间件、网络等基础设施的监控指标配置与数据采集管理。</p>
+                            <a href="settings_metrics.html" class="btn btn-primary">
+                                <i class="fas fa-wrench me-1"></i> 管理设置
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 系统信息 -->
+            <div class="card mt-4">
+                <div class="card-header">系统信息</div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-borderless">
+                                <tbody>
+                                    <tr>
+                                        <td style="width: 35%"><strong>系统版本：</strong></td>
+                                        <td>SkyEye v2.5.3</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>操作系统：</strong></td>
+                                        <td>Linux CentOS 8.4</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>CPU使用率：</strong></td>
+                                        <td>
+                                            <div class="progress" style="height: 8px;">
+                                                <div class="progress-bar bg-success" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                            <small class="text-muted">25%</small>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>内存使用率：</strong></td>
+                                        <td>
+                                            <div class="progress" style="height: 8px;">
+                                                <div class="progress-bar bg-primary" role="progressbar" style="width: 60%;" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                            <small class="text-muted">60%</small>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-borderless">
+                                <tbody>
+                                    <tr>
+                                        <td style="width: 35%"><strong>存储空间：</strong></td>
+                                        <td>
+                                            <div class="progress" style="height: 8px;">
+                                                <div class="progress-bar bg-warning" role="progressbar" style="width: 75%;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                            <small class="text-muted">已使用: 3.75 TB / 总量: 5 TB</small>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>数据库连接：</strong></td>
+                                        <td><span class="badge bg-success">正常</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>上次更新时间：</strong></td>
+                                        <td>2023-11-15 08:30:00</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>运行时间：</strong></td>
+                                        <td>10天 05小时 22分钟</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

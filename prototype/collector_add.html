@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyEye - 新增采集器</title>
+    <link href="https://unpkg.com/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        .sidebar {
+            background-color: #343a40;
+            color: #fff;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 100;
+            padding: 0;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        }
+        .sidebar .nav-link {
+            color: #ced4da;
+            padding: 0.75rem 1.25rem;
+        }
+        .sidebar .nav-link.active {
+            color: #fff;
+            background-color: rgba(255,255,255,0.1);
+        }
+        .sidebar .nav-link:hover {
+            color: #fff;
+            background-color: rgba(255,255,255,0.05);
+        }
+        .sidebar-heading {
+            padding: 0.75rem 1rem;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1rem;
+            color: #818896;
+        }
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+        .card {
+            border-radius: 0.5rem;
+            box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075);
+        }
+        .header-bar {
+            background-color: #fff;
+            border-bottom: 1px solid #e9ecef;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+        }
+        .steps-container {
+            margin-bottom: 30px;
+        }
+        .step-item {
+            padding: 10px 20px;
+            background-color: #e9ecef;
+            border-radius: 30px;
+            position: relative;
+            z-index: 1;
+            font-weight: 500;
+        }
+        .step-item.active {
+            background-color: #007bff;
+            color: #fff;
+        }
+        .step-line {
+            height: 2px;
+            background-color: #e9ecef;
+            flex: 1;
+            margin: 0 -10px;
+        }
+        .step-line.active {
+            background-color: #007bff;
+        }
+        .token-box {
+            background-color: #f8f9fa;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            padding: 10px;
+            font-family: monospace;
+            word-break: break-all;
+        }
+        .installation-steps {
+            background-color: #f8f9fa;
+            border-left: 3px solid #007bff;
+            padding: 15px;
+        }
+        .code-block {
+            font-family: monospace;
+            background-color: #212529;
+            color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- 侧边栏 -->
+    <div class="sidebar col-md-3 col-lg-2 d-md-block">
+        <div class="position-sticky pt-3">
+            <div class="d-flex align-items-center justify-content-center py-3">
+                <h4>SkyEye</h4>
+            </div>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-speedometer2 me-2"></i>
+                        控制台
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-display me-2"></i>
+                        设备管理
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-camera-video me-2"></i>
+                        监控管理
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-bell me-2"></i>
+                        报警中心
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-graph-up me-2"></i>
+                        数据分析
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-calendar3 me-2"></i>
+                        任务调度
+                    </a>
+                </li>
+
+                <div class="sidebar-heading mt-3">系统设置</div>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-gear me-2"></i>
+                        基本设置
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="settings_metrics.html">
+                        <i class="bi bi-bar-chart me-2"></i>
+                        指标配置
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="collector_management.html">
+                        <i class="bi bi-cpu me-2"></i>
+                        采集器管理
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-people me-2"></i>
+                        用户管理
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 主要内容 -->
+    <div class="main-content">
+        <!-- 头部导航 -->
+        <div class="header-bar rounded">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a href="#">系统设置</a></li>
+                            <li class="breadcrumb-item"><a href="collector_management.html">采集器管理</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">新增采集器</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div>
+                    <span class="me-3">管理员</span>
+                    <a href="#" class="text-decoration-none">
+                        <i class="bi bi-box-arrow-right"></i> 退出
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 主卡片 -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0"><i class="bi bi-plus-circle me-2"></i> 新增采集器</h5>
+            </div>
+            <div class="card-body">
+                <!-- 步骤指示器 -->
+                <div class="d-flex align-items-center steps-container">
+                    <div class="step-item active">步骤1: 创建采集器</div>
+                    <div class="step-line"></div>
+                    <div class="step-item">步骤2: 配置与部署</div>
+                    <div class="step-line"></div>
+                    <div class="step-item">步骤3: 激活与验证</div>
+                </div>
+
+                <!-- 步骤1: 创建采集器 -->
+                <div id="step1" class="step-content">
+                    <div class="row">
+                        <div class="col-md-8 offset-md-2">
+                            <form>
+                                <div class="mb-3">
+                                    <label for="collectorName" class="form-label">采集器名称 <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="collectorName" placeholder="请输入采集器名称" value="核心区采集器">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="collectorType" class="form-label">采集器类型 <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="collectorType">
+                                        <option selected>标准采集器</option>
+                                        <option>增强采集器</option>
+                                        <option>轻量级采集器</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="networkZone" class="form-label">网络区域 <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="networkZone">
+                                        <option selected>主数据中心A区</option>
+                                        <option>主数据中心B区</option>
+                                        <option>备份数据中心</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">描述</label>
+                                    <textarea class="form-control" id="description" rows="3" placeholder="描述该采集器的用途和适用场景...">负责核心区服务器与网络设备的指标采集</textarea>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">支持的协议</label>
+                                    <div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" id="snmp" checked>
+                                            <label class="form-check-label" for="snmp">SNMP</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" id="jmx" checked>
+                                            <label class="form-check-label" for="jmx">JMX</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" id="http" checked>
+                                            <label class="form-check-label" for="http">HTTP/API</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" id="wmi">
+                                            <label class="form-check-label" for="wmi">WMI</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" id="ssh">
+                                            <label class="form-check-label" for="ssh">SSH</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="tokenExpiry" class="form-label">注册令牌有效期</label>
+                                        <select class="form-select" id="tokenExpiry">
+                                            <option>1小时</option>
+                                            <option selected>24小时</option>
+                                            <option>48小时</option>
+                                            <option>7天</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 d-flex align-items-end">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="autoGenKey" checked>
+                                            <label class="form-check-label" for="autoGenKey">
+                                                自动生成密钥
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-end mt-4">
+                                    <a href="collector_management.html" class="btn btn-outline-secondary me-2">取消</a>
+                                    <button type="button" class="btn btn-primary" onclick="showStep(2)">下一步 <i class="bi bi-arrow-right"></i></button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 步骤2: 配置与部署 -->
+                <div id="step2" class="step-content" style="display: none;">
+                    <div class="row">
+                        <div class="col-md-8 offset-md-2">
+                            <div class="mb-4">
+                                <h6 class="mb-3">采集器注册令牌</h6>
+                                <div class="d-flex align-items-center">
+                                    <div class="token-box flex-grow-1">
+                                        eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2xsZWN0b3JfaWQiOiJjMDAxIiwiaWF0IjoxNjI5NDU4NzYyLCJleHAiOjE2Mjk1NDUxNjJ9.6XPcNKEgPtB5mJkD7O0JrJM_j92hQQYF3pvNJg
+                                    </div>
+                                    <button class="btn btn-outline-secondary ms-2">
+                                        <i class="bi bi-clipboard"></i> 复制
+                                    </button>
+                                </div>
+                                <small class="text-muted">令牌有效期至 2023-08-15 10:30:00</small>
+                            </div>
+
+                            <div class="mb-4">
+                                <h6 class="mb-3">部署说明</h6>
+                                <div class="installation-steps">
+                                    <p>1. 在目标服务器上下载并安装采集器软件包</p>
+                                    <div class="d-grid gap-2 col-6 mx-auto my-3">
+                                        <button class="btn btn-outline-primary">
+                                            <i class="bi bi-download"></i> 下载采集器 v2.1.3
+                                        </button>
+                                    </div>
+
+                                    <p>2. 配置采集器并使用上述令牌进行注册:</p>
+                                    <div class="code-block">
+                                        ./collector --register --token=&lt;令牌&gt; --server=https://skyeye.yourdomain.com/api
+                                    </div>
+
+                                    <p>3. 采集器将自动连接至系统并进行注册</p>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between mt-4">
+                                <button type="button" class="btn btn-outline-secondary" onclick="showStep(1)">
+                                    <i class="bi bi-arrow-left"></i> 上一步
+                                </button>
+                                <button type="button" class="btn btn-primary" onclick="showStep(3)">
+                                    下一步 <i class="bi bi-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 步骤3: 激活与验证 -->
+                <div id="step3" class="step-content" style="display: none;">
+                    <div class="row">
+                        <div class="col-md-8 offset-md-2">
+                            <!-- 等待连接界面 -->
+                            <div class="text-center my-5">
+                                <div class="spinner-border text-primary mb-4" role="status">
+                                    <span class="visually-hidden">加载中...</span>
+                                </div>
+                                <h5>等待采集器连接...</h5>
+                                <p class="text-muted">(等待时间: 1:25 / 3:00)</p>
+                            </div>
+
+                            <div class="alert alert-warning">
+                                <h5><i class="bi bi-exclamation-triangle me-2"></i> 采集器尚未连接到系统</h5>
+                                <p class="mb-0">请确保:</p>
+                                <ul>
+                                    <li>采集器软件已正确安装且已启动</li>
+                                    <li>注册令牌输入正确</li>
+                                    <li>网络连接正常，防火墙允许采集器访问系统API</li>
+                                    <li>服务器时间已同步</li>
+                                </ul>
+                            </div>
+
+                            <div class="d-flex justify-content-between mt-4">
+                                <div>
+                                    <button type="button" class="btn btn-outline-primary me-2">
+                                        <i class="bi bi-arrow-repeat"></i> 检查连接状态
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary">
+                                        <i class="bi bi-key"></i> 重新生成令牌
+                                    </button>
+                                </div>
+                                <div>
+                                    <button type="button" class="btn btn-outline-secondary me-2" onclick="showStep(2)">
+                                        <i class="bi bi-arrow-left"></i> 上一步
+                                    </button>
+                                    <a href="collector_management.html" class="btn btn-primary">
+                                        完成设置
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 切换步骤的函数
+        function showStep(step) {
+            // 隐藏所有步骤内容
+            document.querySelectorAll('.step-content').forEach(el => {
+                el.style.display = 'none';
+            });
+            
+            // 显示当前步骤
+            document.getElementById('step' + step).style.display = 'block';
+            
+            // 更新步骤指示器
+            const stepItems = document.querySelectorAll('.step-item');
+            const stepLines = document.querySelectorAll('.step-line');
+            
+            stepItems.forEach((item, index) => {
+                if (index < step) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+            
+            stepLines.forEach((line, index) => {
+                if (index < step - 1) {
+                    line.classList.add('active');
+                } else {
+                    line.classList.remove('active');
+                }
+            });
+        }
+    </script>
+</body>
+</html> 

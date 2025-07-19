@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyEye - 添加设备 - 确认信息</title>
+    <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../assets/css/fontawesome.min.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <style>
+        .wizard-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+        .wizard-step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+        .wizard-step:not(:last-child):after {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            width: 100%;
+            height: 2px;
+            background-color: #e9ecef;
+            z-index: 1;
+        }
+        .wizard-step.completed:not(:last-child):after,
+        .wizard-step.active:not(:last-child):after {
+            background-color: #007bff;
+        }
+        .wizard-step-icon {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            color: #6c757d;
+            line-height: 24px;
+            font-size: 12px;
+            position: relative;
+            z-index: 2;
+            margin-bottom: 5px;
+        }
+        .wizard-step.active .wizard-step-icon {
+            background-color: #007bff;
+            color: #fff;
+        }
+        .wizard-step.completed .wizard-step-icon {
+            background-color: #28a745;
+            color: #fff;
+        }
+        .wizard-step-text {
+            font-size: 14px;
+            color: #6c757d;
+        }
+        .wizard-step.active .wizard-step-text {
+            color: #007bff;
+            font-weight: 600;
+        }
+        .wizard-step.completed .wizard-step-text {
+            color: #28a745;
+            font-weight: 600;
+        }
+        .confirm-section {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        .confirm-section:last-child {
+            border-bottom: none;
+        }
+        .confirm-section-title {
+            margin-bottom: 15px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .info-group {
+            margin-bottom: 10px;
+        }
+        .info-label {
+            font-weight: 500;
+            color: #495057;
+        }
+        .info-value {
+            color: #212529;
+        }
+        .tag-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            font-size: 12px;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 左侧导航 -->
+        <div class="sidebar">
+            <div class="logo">
+                <img src="../assets/images/logo.png" alt="SkyEye Logo">
+                <h2>SkyEye</h2>
+            </div>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="../dashboard.html"><i class="fas fa-tachometer-alt"></i> 控制台</a></li>
+                    
+                    <!-- 设备管理菜单（展开） -->
+                    <li class="active">
+                        <a href="#deviceSubMenu" data-toggle="collapse" aria-expanded="true">
+                            <i class="fas fa-server"></i> 设备管理
+                            <i class="fas fa-angle-down"></i>
+                        </a>
+                        <ul class="collapse show" id="deviceSubMenu">
+                            <li><a href="devices_v2.html">设备列表</a></li>
+                            <li class="active"><a href="device_add_v2.html">添加设备</a></li>
+                            <li><a href="device_types.html">设备类型管理</a></li>
+                            <li><a href="device_areas.html">区域管理</a></li>
+                            <li><a href="device_groups.html">设备分组</a></li>
+                            <li><a href="device_tags.html">标签管理</a></li>
+                            <li><a href="device_templates.html">设备模板</a></li>
+                            <li><a href="device_protocols.html">设备协议</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li><a href="../monitoring.html"><i class="fas fa-video"></i> 监控管理</a></li>
+                    <li><a href="../alerts.html"><i class="fas fa-bell"></i> 报警中心</a></li>
+                    <li><a href="../task_scheduling.html"><i class="fas fa-tasks"></i> 任务调度</a></li>
+                    <li><a href="../analytics.html"><i class="fas fa-chart-line"></i> 数据分析</a></li>
+                    <li><a href="../settings.html"><i class="fas fa-cog"></i> 系统设置</a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <!-- 顶部导航 -->
+            <header class="top-bar">
+                <div class="search-container">
+                    <input type="text" placeholder="搜索...">
+                    <i class="fas fa-search"></i>
+                </div>
+                <div class="top-bar-right">
+                    <div class="notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge">3</span>
+                    </div>
+                    <div class="user-profile">
+                        <img src="../assets/images/user-avatar.png" alt="用户头像">
+                        <span>管理员</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- 内容区域 -->
+            <div class="content">
+                <div class="content-header">
+                    <h2>添加设备</h2>
+                    <div class="actions">
+                        <button class="btn btn-secondary" onclick="location.href='devices_v2.html'">
+                            <i class="fas fa-arrow-left"></i> 返回设备列表
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 步骤条 -->
+                <div class="wizard-steps">
+                    <div class="wizard-step completed">
+                        <div class="wizard-step-icon"><i class="fas fa-check"></i></div>
+                        <div class="wizard-step-text">基本信息</div>
+                    </div>
+                    <div class="wizard-step completed">
+                        <div class="wizard-step-icon"><i class="fas fa-check"></i></div>
+                        <div class="wizard-step-text">网络设置</div>
+                    </div>
+                    <div class="wizard-step completed">
+                        <div class="wizard-step-icon"><i class="fas fa-check"></i></div>
+                        <div class="wizard-step-text">高级配置</div>
+                    </div>
+                    <div class="wizard-step active">
+                        <div class="wizard-step-icon">4</div>
+                        <div class="wizard-step-text">确认信息</div>
+                    </div>
+                </div>
+
+                <!-- 确认信息 -->
+                <div class="card">
+                    <div class="card-body">
+                        <p class="text-muted mb-4">请确认以下设备信息，确认无误后点击"完成"按钮进行保存。</p>
+                        
+                        <!-- 基本信息 -->
+                        <div class="confirm-section">
+                            <div class="confirm-section-title">
+                                <i class="fas fa-info-circle"></i> 基本信息
+                                <a href="device_add_v2.html" class="btn btn-sm btn-link float-right">
+                                    <i class="fas fa-edit"></i> 编辑
+                                </a>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="info-group">
+                                        <div class="info-label">设备名称</div>
+                                        <div class="info-value">前门摄像头</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="info-group">
+                                        <div class="info-label">设备编号</div>
+                                        <div class="info-value">CAM-F-001</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="info-group">
+                                        <div class="info-label">设备类型</div>
+                                        <div class="info-value">网络摄像头</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="info-group">
+                                        <div class="info-label">设备型号</div>
+                                        <div class="info-value">HK-DS2CD2145</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="info-group">
+                                        <div class="info-label">所在区域</div>
+                                        <div class="info-value">总部大楼 - 一楼 - 入口大厅</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="info-group">
+                                        <div class="info-label">厂商</div>
+                                        <div class="info-value">海康威视</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="info-group">
+                                        <div class="info-label">安装日期</div>
+                                        <div class="info-value">2023-04-15</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="info-group">
+                                        <div class="info-label">设备模板</div>
+                                        <div class="info-value">海康摄像头标准模板</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 网络信息 -->
+                        <div class="confirm-section">
+                            <div class="confirm-section-title">
+                                <i class="fas fa-network-wired"></i> 网络信息
+                                <a href="device_add_network_v2.html" class="btn btn-sm btn-link float-right">
+                                    <i class="fas fa-edit"></i> 编辑
+                                </a>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="info-group">
+                                        <div class="info-label">IP地址</div>
+                                        <div class="info-value">192.168.1.100</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="info-group">
+                                        <div class="info-label">端口号</div>
+                                        <div class="info-value">554</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="info-group">
+                                        <div class="info-label">MAC地址</div>
+                                        <div class="info-value">00:1B:44:11:3A:B7</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="info-group">
+                                        <div class="info-label">网络类型</div>
+                                        <div class="info-value">有线网络</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="info-group">
+                                        <div class="info-label">连接协议</div>
+                                        <div class="info-value">RTSP (实时流协议)</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="info-group">
+                                        <div class="info-label">RTSP地址</div>
+                                        <div class="info-value">rtsp://admin:admin123@192.168.1.100:554/stream</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="info-group">
+                                        <div class="info-label">用户名</div>
+                                        <div class="info-value">admin</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="info-group">
+                                        <div class="info-label">密码</div>
+                                        <div class="info-value">******** <i class="fas fa-eye-slash text-muted"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="info-group">
+                                        <div class="info-label">认证方式</div>
+                                        <div class="info-value">Basic认证</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="info-group">
+                                        <div class="info-label">传输模式</div>
+                                        <div class="info-value">TCP</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 管理信息 -->
+                        <div class="confirm-section">
+                            <div class="confirm-section-title">
+                                <i class="fas fa-cogs"></i> 管理信息
+                                <a href="device_add_advanced_v2.html" class="btn btn-sm btn-link float-right">
+                                    <i class="fas fa-edit"></i> 编辑
+                                </a>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="info-group">
+                                        <div class="info-label">设备分组</div>
+                                        <div class="info-value">安防监控 > 门口监控</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="info-group">
+                                        <div class="info-label">设备标签</div>
+                                        <div class="info-value">
+                                            <span class="tag-badge">重要</span>
+                                            <span class="tag-badge">入口</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="info-group">
+                                        <div class="info-label">心跳检测间隔</div>
+                                        <div class="info-value">60秒</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="info-group">
+                                        <div class="info-label">重连超时时间</div>
+                                        <div class="info-value">300秒</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="info-group">
+                                        <div class="info-label">自动重连</div>
+                                        <div class="info-value">是</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="info-group">
+                                        <div class="info-label">设备离线报警</div>
+                                        <div class="info-value">是</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 报警配置 -->
+                        <div class="confirm-section">
+                            <div class="confirm-section-title">
+                                <i class="fas fa-bell"></i> 报警配置
+                                <a href="device_add_advanced_v2.html" class="btn btn-sm btn-link float-right">
+                                    <i class="fas fa-edit"></i> 编辑
+                                </a>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="info-group">
+                                        <div class="info-label">设备报警方式</div>
+                                        <div class="info-value">系统通知, 邮件通知</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="info-group">
+                                        <div class="info-label">通知接收人</div>
+                                        <div class="info-value">管理员, 操作员</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 备注信息 -->
+                        <div class="confirm-section">
+                            <div class="confirm-section-title">
+                                <i class="fas fa-edit"></i> 备注信息
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="info-group">
+                                        <div class="info-value">前门摄像头，用于监控大门入口区域，24小时工作。</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 操作按钮 -->
+                        <div class="form-actions text-right mt-4">
+                            <button type="button" class="btn btn-secondary" onclick="location.href='device_add_advanced_v2.html'">上一步</button>
+                            <button type="button" class="btn btn-success" onclick="saveDevice()">
+                                <i class="fas fa-check"></i> 完成
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加成功模态框 -->
+    <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title" id="successModalLabel"><i class="fas fa-check-circle"></i> 添加成功</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>设备"前门摄像头"已成功添加到系统中。</p>
+                    <div class="mt-3">
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="saveAsTemplate">
+                            <label class="custom-control-label" for="saveAsTemplate">将此配置保存为设备模板</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" onclick="location.href='devices_v2.html'">返回设备列表</button>
+                    <button type="button" class="btn btn-outline-primary" data-dismiss="modal" onclick="location.href='device_add_v2.html'">继续添加设备</button>
+                    <button type="button" class="btn btn-success" data-dismiss="modal" onclick="location.href='device_detail_v2.html'">查看设备详情</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../assets/js/jquery.min.js"></script>
+    <script src="../assets/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/scripts.js"></script>
+    <script>
+        function saveDevice() {
+            // 模拟保存设备信息
+            // 实际项目中会调用API保存数据
+            setTimeout(function() {
+                $('#successModal').modal('show');
+            }, 500);
+        }
+    </script>
+</body>
+</html> 

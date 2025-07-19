@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyEye - 添加设备 - 高级配置</title>
+    <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../assets/css/fontawesome.min.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <style>
+        .wizard-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+        .wizard-step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+        .wizard-step:not(:last-child):after {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            width: 100%;
+            height: 2px;
+            background-color: #e9ecef;
+            z-index: 1;
+        }
+        .wizard-step.completed:not(:last-child):after,
+        .wizard-step.active:not(:last-child):after {
+            background-color: #007bff;
+        }
+        .wizard-step-icon {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            color: #6c757d;
+            line-height: 24px;
+            font-size: 12px;
+            position: relative;
+            z-index: 2;
+            margin-bottom: 5px;
+        }
+        .wizard-step.active .wizard-step-icon {
+            background-color: #007bff;
+            color: #fff;
+        }
+        .wizard-step.completed .wizard-step-icon {
+            background-color: #28a745;
+            color: #fff;
+        }
+        .wizard-step-text {
+            font-size: 14px;
+            color: #6c757d;
+        }
+        .wizard-step.active .wizard-step-text {
+            color: #007bff;
+            font-weight: 600;
+        }
+        .wizard-step.completed .wizard-step-text {
+            color: #28a745;
+            font-weight: 600;
+        }
+        .form-section {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        .form-section:last-child {
+            border-bottom: none;
+        }
+        .form-section-title {
+            margin-bottom: 15px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .bootstrap-tagsinput {
+            width: 100%;
+            border-radius: 0.25rem;
+            padding: 0.375rem 0.75rem;
+            border: 1px solid #ced4da;
+        }
+        .bootstrap-tagsinput .tag {
+            margin-right: 2px;
+            padding: 0.2rem 0.4rem;
+            font-size: 0.875rem;
+            background-color: #007bff;
+            color: #fff;
+            border-radius: 0.2rem;
+            display: inline-block;
+        }
+        .bootstrap-tagsinput input {
+            border: none;
+            box-shadow: none;
+            outline: none;
+            background-color: transparent;
+            padding: 0;
+            margin: 0;
+            width: auto;
+            max-width: inherit;
+        }
+        .tag-label {
+            margin-right: 5px;
+            padding: 3px 8px;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            font-size: 12px;
+            display: inline-block;
+            margin-bottom: 5px;
+            cursor: pointer;
+        }
+        .tag-label.selected {
+            background-color: #007bff;
+            color: #fff;
+        }
+        .custom-checkbox-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            transition: all 0.2s;
+            margin: 0;
+        }
+        .custom-checkbox-label:hover {
+            background-color: #f8f9fa;
+        }
+        .custom-checkbox-label.selected {
+            background-color: #e9f5ff;
+            border-color: #b8daff;
+        }
+        .custom-checkbox-label input[type="checkbox"] {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 左侧导航 -->
+        <div class="sidebar">
+            <div class="logo">
+                <img src="../assets/images/logo.png" alt="SkyEye Logo">
+                <h2>SkyEye</h2>
+            </div>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="../dashboard.html"><i class="fas fa-tachometer-alt"></i> 控制台</a></li>
+                    
+                    <!-- 设备管理菜单（展开） -->
+                    <li class="active">
+                        <a href="#deviceSubMenu" data-toggle="collapse" aria-expanded="true">
+                            <i class="fas fa-server"></i> 设备管理
+                            <i class="fas fa-angle-down"></i>
+                        </a>
+                        <ul class="collapse show" id="deviceSubMenu">
+                            <li><a href="devices_v2.html">设备列表</a></li>
+                            <li class="active"><a href="device_add_v2.html">添加设备</a></li>
+                            <li><a href="device_types.html">设备类型管理</a></li>
+                            <li><a href="device_areas.html">区域管理</a></li>
+                            <li><a href="device_groups.html">设备分组</a></li>
+                            <li><a href="device_tags.html">标签管理</a></li>
+                            <li><a href="device_templates.html">设备模板</a></li>
+                            <li><a href="device_protocols.html">设备协议</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li><a href="../monitoring.html"><i class="fas fa-video"></i> 监控管理</a></li>
+                    <li><a href="../alerts.html"><i class="fas fa-bell"></i> 报警中心</a></li>
+                    <li><a href="../task_scheduling.html"><i class="fas fa-tasks"></i> 任务调度</a></li>
+                    <li><a href="../analytics.html"><i class="fas fa-chart-line"></i> 数据分析</a></li>
+                    <li><a href="../settings.html"><i class="fas fa-cog"></i> 系统设置</a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <!-- 顶部导航 -->
+            <header class="top-bar">
+                <div class="search-container">
+                    <input type="text" placeholder="搜索...">
+                    <i class="fas fa-search"></i>
+                </div>
+                <div class="top-bar-right">
+                    <div class="notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge">3</span>
+                    </div>
+                    <div class="user-profile">
+                        <img src="../assets/images/user-avatar.png" alt="用户头像">
+                        <span>管理员</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- 内容区域 -->
+            <div class="content">
+                <div class="content-header">
+                    <h2>添加设备</h2>
+                    <div class="actions">
+                        <button class="btn btn-secondary" onclick="location.href='devices_v2.html'">
+                            <i class="fas fa-arrow-left"></i> 返回设备列表
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 步骤条 -->
+                <div class="wizard-steps">
+                    <div class="wizard-step completed">
+                        <div class="wizard-step-icon"><i class="fas fa-check"></i></div>
+                        <div class="wizard-step-text">基本信息</div>
+                    </div>
+                    <div class="wizard-step completed">
+                        <div class="wizard-step-icon"><i class="fas fa-check"></i></div>
+                        <div class="wizard-step-text">网络设置</div>
+                    </div>
+                    <div class="wizard-step active">
+                        <div class="wizard-step-icon">3</div>
+                        <div class="wizard-step-text">高级配置</div>
+                    </div>
+                    <div class="wizard-step">
+                        <div class="wizard-step-icon">4</div>
+                        <div class="wizard-step-text">确认信息</div>
+                    </div>
+                </div>
+
+                <!-- 添加设备表单 -->
+                <div class="card">
+                    <div class="card-body">
+                        <!-- 设备分组 -->
+                        <div class="form-section">
+                            <div class="form-section-title">
+                                <i class="fas fa-layer-group"></i> 设备分组
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="deviceGroup">选择设备分组</label>
+                                        <select class="form-control" id="deviceGroup">
+                                            <option value="">未分组</option>
+                                            <optgroup label="安防监控">
+                                                <option value="1" selected>门口监控</option>
+                                                <option value="2">周界监控</option>
+                                                <option value="3">楼道监控</option>
+                                            </optgroup>
+                                            <optgroup label="环境监控">
+                                                <option value="4">温湿度监测</option>
+                                                <option value="5">空气质量监测</option>
+                                            </optgroup>
+                                            <optgroup label="门禁系统">
+                                                <option value="6">出入口门禁</option>
+                                                <option value="7">重要区域门禁</option>
+                                            </optgroup>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <button type="button" class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#addGroupModal">
+                                            <i class="fas fa-plus"></i> 新建分组
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 设备标签 -->
+                        <div class="form-section">
+                            <div class="form-section-title">
+                                <i class="fas fa-tags"></i> 设备标签
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="deviceTags">设备标签</label>
+                                        <div class="bootstrap-tagsinput">
+                                            <span class="tag">重要<span data-role="remove">×</span></span>
+                                            <span class="tag">入口<span data-role="remove">×</span></span>
+                                            <input type="text" placeholder="添加标签...">
+                                        </div>
+                                        <small class="form-text text-muted">多个标签用逗号分隔或回车确认</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label>常用标签</label>
+                                    <div>
+                                        <span class="tag-label selected" onclick="toggleTag(this, '重要')">重要</span>
+                                        <span class="tag-label selected" onclick="toggleTag(this, '入口')">入口</span>
+                                        <span class="tag-label" onclick="toggleTag(this, '出口')">出口</span>
+                                        <span class="tag-label" onclick="toggleTag(this, '室内')">室内</span>
+                                        <span class="tag-label" onclick="toggleTag(this, '室外')">室外</span>
+                                        <span class="tag-label" onclick="toggleTag(this, '高清')">高清</span>
+                                        <span class="tag-label" onclick="toggleTag(this, '红外')">红外</span>
+                                        <span class="tag-label" onclick="toggleTag(this, '测试')">测试</span>
+                                        <span class="tag-label" onclick="toggleTag(this, '备用')">备用</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 监控参数 -->
+                        <div class="form-section">
+                            <div class="form-section-title">
+                                <i class="fas fa-sliders-h"></i> 监控参数
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="heartbeatInterval">心跳检测间隔(秒)</label>
+                                        <input type="number" class="form-control" id="heartbeatInterval" value="60">
+                                        <small class="form-text text-muted">检测设备在线状态的时间间隔</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="reconnectTimeout">重连超时时间(秒)</label>
+                                        <input type="number" class="form-control" id="reconnectTimeout" value="300">
+                                        <small class="form-text text-muted">设备断开连接后尝试重连的最大时间</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="maxRetryCount">最大重试次数</label>
+                                        <input type="number" class="form-control" id="maxRetryCount" value="3">
+                                        <small class="form-text text-muted">连接失败时尝试重连的次数</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="offlineThreshold">离线阈值(秒)</label>
+                                        <input type="number" class="form-control" id="offlineThreshold" value="180">
+                                        <small class="form-text text-muted">超过该时间未收到心跳将视为离线</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input" id="autoReconnect" checked>
+                                            <label class="custom-control-label" for="autoReconnect">自动重连</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input" id="offlineAlert" checked>
+                                            <label class="custom-control-label" for="offlineAlert">设备离线报警</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 报警配置 -->
+                        <div class="form-section">
+                            <div class="form-section-title">
+                                <i class="fas fa-bell"></i> 报警配置
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-12">
+                                    <label>设备报警方式</label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label class="custom-checkbox-label" onclick="toggleCheckbox(this)">
+                                            <input type="checkbox" checked> 系统通知
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label class="custom-checkbox-label" onclick="toggleCheckbox(this)">
+                                            <input type="checkbox" checked> 邮件通知
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label class="custom-checkbox-label" onclick="toggleCheckbox(this)">
+                                            <input type="checkbox"> 短信通知
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label class="custom-checkbox-label" onclick="toggleCheckbox(this)">
+                                            <input type="checkbox"> 语音电话
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="notifyUsers">通知接收人</label>
+                                        <select class="form-control" id="notifyUsers" multiple>
+                                            <option value="admin" selected>管理员</option>
+                                            <option value="operator" selected>操作员</option>
+                                            <option value="security">安保人员</option>
+                                            <option value="maintenance">维护人员</option>
+                                        </select>
+                                        <small class="form-text text-muted">按住Ctrl键可多选</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 设备描述 -->
+                        <div class="form-section">
+                            <div class="form-section-title">
+                                <i class="fas fa-edit"></i> 设备备注
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="deviceDescription">备注信息</label>
+                                        <textarea class="form-control" id="deviceDescription" rows="3" placeholder="请输入设备备注信息">前门摄像头，用于监控大门入口区域，24小时工作。</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 操作按钮 -->
+                        <div class="form-actions text-right">
+                            <button type="button" class="btn btn-secondary" onclick="location.href='device_add_network_v2.html'">上一步</button>
+                            <button type="button" class="btn btn-primary" onclick="location.href='device_add_confirm_v2.html'">下一步</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加分组模态框 -->
+    <div class="modal fade" id="addGroupModal" tabindex="-1" role="dialog" aria-labelledby="addGroupModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addGroupModalLabel">新建设备分组</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="groupName">分组名称 <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="groupName" placeholder="请输入分组名称">
+                        </div>
+                        <div class="form-group">
+                            <label for="groupCode">分组编码 <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="groupCode" placeholder="请输入分组编码">
+                        </div>
+                        <div class="form-group">
+                            <label for="parentGroup">父级分组</label>
+                            <select class="form-control" id="parentGroup">
+                                <option value="">无 (顶级分组)</option>
+                                <option value="1">安防监控</option>
+                                <option value="4">环境监控</option>
+                                <option value="6">门禁系统</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="groupDescription">分组描述</label>
+                            <textarea class="form-control" id="groupDescription" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../assets/js/jquery.min.js"></script>
+    <script src="../assets/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/scripts.js"></script>
+    <script>
+        function toggleTag(element, tag) {
+            $(element).toggleClass('selected');
+            
+            // 这里应该更新标签输入框，但简化实现
+            // 实际实现中会操作bootstrap-tagsinput组件
+        }
+        
+        function toggleCheckbox(element) {
+            $(element).toggleClass('selected');
+            var checkbox = $(element).find('input[type="checkbox"]');
+            checkbox.prop('checked', !checkbox.prop('checked'));
+        }
+        
+        $(document).ready(function() {
+            // 设置已选中的复选框标签
+            $('.custom-checkbox-label').each(function() {
+                if ($(this).find('input[type="checkbox"]').prop('checked')) {
+                    $(this).addClass('selected');
+                }
+            });
+        });
+    </script>
+</body>
+</html> 
