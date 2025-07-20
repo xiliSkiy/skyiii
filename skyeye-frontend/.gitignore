@@ -7,6 +7,7 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# 依赖和构建
 node_modules
 .DS_Store
 dist
@@ -14,8 +15,12 @@ dist-ssr
 coverage
 *.local
 
+# 测试相关
 /cypress/videos/
 /cypress/screenshots/
+test-results/
+playwright-report/
+.nyc_output/
 
 # Editor directories and files
 .vscode/*
@@ -27,7 +32,50 @@ coverage
 *.sln
 *.sw?
 
+# TypeScript
 *.tsbuildinfo
 
-test-results/
-playwright-report/
+# 环境变量
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# 缓存文件
+.cache/
+.parcel-cache/
+.eslintcache
+.stylelintcache
+
+# Vite特定
+.vite/
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+
+# 临时文件
+tmp/
+temp/
+*.tmp
+*.temp
+
+# 备份文件
+*.bak
+*.backup
+*.old
+
+# 监控系统特定
+# 配置文件（如果包含敏感信息）
+config/local.*
+config/production.*
+
+# 上传文件
+uploads/
+public/uploads/
+
+# 证书文件
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx

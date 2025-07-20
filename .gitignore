@@ -1,0 +1,170 @@
+# 依赖文件
+node_modules/
+*/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# 构建输出
+dist/
+build/
+*/dist/
+*/build/
+
+# 环境变量文件
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE和编辑器文件
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 操作系统文件
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# 日志文件
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# 运行时数据
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# 覆盖率目录
+coverage/
+*.lcov
+.nyc_output/
+
+# 缓存文件
+.cache/
+.parcel-cache/
+.eslintcache
+.stylelintcache
+
+# 临时文件
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Java相关
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+hs_err_pid*
+target/
+*/target/
+
+# Maven
+.mvn/
+mvnw
+mvnw.cmd
+
+# Gradle
+.gradle/
+gradle/
+gradlew
+gradlew.bat
+
+# Spring Boot
+application-*.yml
+application-*.yaml
+application-*.properties
+
+# 数据库文件
+*.db
+*.sqlite
+*.sqlite3
+
+# Docker相关
+.dockerignore
+
+# 备份文件
+*.bak
+*.backup
+*.old
+
+# 压缩文件
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# 前端特定
+# Vite
+.vite/
+*/vite.config.js.timestamp-*
+*/vite.config.ts.timestamp-*
+
+# Vue
+.vue/
+
+# TypeScript
+*.tsbuildinfo
+
+# ESLint
+.eslintcache
+
+# Prettier
+.prettierignore
+
+# 测试相关
+coverage/
+.nyc_output/
+junit.xml
+
+# 本地配置文件
+config/local.json
+config/development.json
+config/production.json
+
+# 证书文件
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# 敏感信息
+secrets/
+credentials/
+*.secret
+
+# 项目特定文件
+# 原型文件（如果不需要版本控制）
+# prototype/
+
+# 文档生成
+docs/generated/
+
+# 监控和日志
+monitoring/logs/
+*.access.log
+*.error.log
+
+# 开发工具
+.history/
+.vscode/settings.json
+.vscode/launch.json
+.vscode/tasks.json

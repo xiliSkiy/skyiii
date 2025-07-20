@@ -1,12 +1,16 @@
 @import './base.css';
 
+/* 全屏应用样式 - 适用于监控系统 */
 #app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
   font-weight: normal;
+  overflow: hidden;
 }
 
+/* 链接样式 */
 a,
 .green {
   text-decoration: none;
@@ -21,15 +25,18 @@ a,
   }
 }
 
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }
+/* 确保body也是全屏 */
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
 
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
-  }
+html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100vh;
 }

@@ -1,2 +1,5 @@
 com\skyeye\auth\AuthApplicationTests.class
+com\skyeye\auth\service\AuthServiceTest.class
+com\skyeye\auth\util\JwtUtilTest.class
 com\skyeye\auth\DatabaseConnectionTest.class
+com\skyeye\auth\service\PermissionServiceTest.class

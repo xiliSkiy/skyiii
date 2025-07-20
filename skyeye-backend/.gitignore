@@ -1,0 +1,128 @@
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# Gradle
+.gradle/
+build/
+gradle/
+gradlew
+gradlew.bat
+
+# Java
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+hs_err_pid*
+replay_pid*
+
+# IDE
+.idea/
+*.iws
+*.iml
+*.ipr
+.vscode/
+.settings/
+.project
+.classpath
+.factorypath
+
+# Spring Boot
+application-*.yml
+application-*.yaml
+application-*.properties
+!application.yml
+!application.yaml
+!application.properties
+
+# 日志文件
+logs/
+*.log
+*.log.*
+log4j.properties
+logback.xml
+
+# 数据库
+*.db
+*.sqlite
+*.sqlite3
+*.h2.db
+
+# 临时文件
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# 操作系统
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# 环境变量
+.env
+.env.local
+.env.development
+.env.production
+
+# 配置文件（包含敏感信息）
+config/database.properties
+config/redis.properties
+config/application-prod.yml
+config/application-dev.yml
+
+# 上传文件
+uploads/
+files/
+static/uploads/
+
+# 证书和密钥
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+*.jks
+*.keystore
+
+# 缓存
+.cache/
+
+# 测试覆盖率
+coverage/
+.nyc_output/
+
+# Docker
+.dockerignore
+
+# 监控系统特定
+# 监控数据
+monitoring/data/
+metrics/
+alerts/data/
+
+# 备份文件
+*.bak
+*.backup
+*.old
+
+# 压缩文件
+*.zip
+*.tar.gz
+*.rar
+*.7z
